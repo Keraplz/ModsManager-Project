@@ -2,10 +2,10 @@
 <autoUpdate>
 	<update appId="ModsManager">
 		<version>2.0.0.0</version>
-		<url>https://cdn.discordapp.com/attachments/419268465577295872/421139958300934144/ModsManager.exe</url>
+		<url>https://cdn.discordapp.com/attachments/419268465577295872/422180966321356802/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>5f200f3c86a1bcbbb0b9615f93851d7b</md5>
-		<description>.Testing XML Updater again.</description>
+		<md5>afea4910c75e8b3d62a42704076cadaf</md5>
+		<description>.Testing Updater again.</description>
 		<launchArgs></launchArgs>
 	</update>
 </autoUpdate>

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <autoUpdate>
 	<update appId="SRModManager">
-		<version>2.0.0.0</version>
+		<version>1.0.0.0</version>
 		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>afea4910c75e8b3d62a42704076cadaf</md5>
+		<md5>a402776391864824911ca3f88e8ef046</md5>
 		<description>.Testing Updater again.</description>
 		<launchArgs></launchArgs>
 	</update>

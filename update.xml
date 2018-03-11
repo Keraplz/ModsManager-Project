@@ -2,7 +2,7 @@
 <autoUpdate>
 	<update appId="SRModManager">
 		<version>2.0.0.0</version>
-		<url>https://cdn.discordapp.com/attachments/419268465577295872/422180966321356802/ModsManager.exe</url>
+		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
 		<md5>afea4910c75e8b3d62a42704076cadaf</md5>
 		<description>.Testing Updater again.</description>

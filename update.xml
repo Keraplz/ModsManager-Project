@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <autoUpdate>
-	<update appId="ModsManager">
+	<update appId="SRModManager">
 		<version>2.0.0.0</version>
 		<url>https://cdn.discordapp.com/attachments/419268465577295872/422180966321356802/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>

@@ -4,8 +4,8 @@
 		<version>1.1.0.0</version>
 		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>2699acee9b24d5a82ef9f9a277157066</md5>
-		<description>Minor bug fixes. Custom .dll are now embed within the executable</description>
+		<md5>3fd156d4bd285e808605c0723d9dcfed</md5>
+		<description>Minor bug fixes. Custom .dll are now embed within the executable.</description>
 		<launchArgs></launchArgs>
 	</update>
 </autoUpdate>

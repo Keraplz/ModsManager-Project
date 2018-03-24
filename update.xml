@@ -4,8 +4,8 @@
 		<version>1.3.0.0</version>
 		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>878ff36eb389550a493971afc25bcd22</md5>
-		<description>Major bug fixes</description>
+		<md5>037559b84192f8afc0298b489e155eae</md5>
+		<description>Fixed possible crash when missing _content folder</description>
 		<launchArgs></launchArgs>
 	</update>
 </autoUpdate>

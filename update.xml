@@ -4,7 +4,7 @@
 		<version>1.8.0.0</version>
 		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>be7782328aabc5483b09058ad0cfe2cb</md5>
+		<md5>ea1155e4cae8f019000e7e6755089388</md5>
 		<description>Optimization update</description>
 		<launchArgs>-r updateProcess</launchArgs>
 	</update>

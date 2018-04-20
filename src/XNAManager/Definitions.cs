@@ -24,29 +24,5 @@ namespace ModsManager
                 toLabel_baseinfo_CurrentBuild,
                 toLabel_baseinfo_SetupTime,
                 toLabel_baseinfo_InstalledMods.ToString("00"));
-
-        public static String ignoredType = "";
-        public static String ignoredFile = "";
-
-        public static IEnumerable<String> toLog_unic = new List<String>();
-
-        public static IList<String> install = new List<String>();
-        public static IEnumerable<String> install_unic = new List<String>();
-
-        public static IList<String> outputName = new List<String>();
-        public static IEnumerable<String> outputName_unic = new List<String>();
-
-        public static IList<String> ignoredList = new List<String>();
-        public static IEnumerable<String> ignoredList_unic = new List<String>();
-
-        public static IList<String> xnbPath = new List<String>();
-        public static IEnumerable<String> xnbPath_unic = new List<String>();
-
-        public static IList<String> installList = new List<String>();
-
-        public static IList<String> modFiles = new List<String>();
-        public static IList<String> reformed_modFiles = new List<String>();
-        public static IList<String> reformed_modFiles_backup = new List<String>();
-        public static IEnumerable<String> reformed_modFiles_unic = new List<String>();
     }
 }

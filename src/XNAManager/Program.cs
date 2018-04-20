@@ -18,8 +18,6 @@ namespace ModsManager
         [STAThread]
         static void Main(string[] args)
         {
-
-            Profile profile = Profiles.Blank;
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
             // ----
@@ -44,20 +42,22 @@ namespace ModsManager
 
             if (args.Length > 0)
             {
-                if (args[0] == "-r")
+                if (args[0] == "-dev")
                 {
                     if (args[1] == "updateProcess")
                     {
-                        //LogFile.AddMessage("updateProcess sequence triggered");
+                        LogFile.WriteLine("Refreshing Mods . . .  ");
+                        var timeRecord_ = System.Diagnostics.Stopwatch.StartNew();
 
+                        // ----
                         // Get installed mods
                         IList<Mod> modsInstalled = Keraplz.JSON.Read.Mods.GetInstalled();
 
                         if (modsInstalled.Count > 0)
                         {
                             // Uninstall all installed mods
-                            foreach (Mod modName in modsInstalled)
-                                Setup.UninstallMod_(modName);
+                            foreach (Mod modInfo in modsInstalled)
+                                ModsManager.uninstallMod(modInfo);
                         }
 
                         // Clear mods/*.json files
@@ -66,14 +66,30 @@ namespace ModsManager
 
                         // Rewrite mods/*.json files
                         Maintenance.WriteModDefinitions(Profiles.Default.GetGame());
-                        //Maintenance.WriteModDefinitions(Profiles.Default, true);
 
                         if (modsInstalled.Count > 0)
                         {
+                            // Refresh IList<Mod> modsInstalled
+                            IList<Mod> modsInstalledOld = new List<Mod>();
+                            foreach (Mod modInfo in modsInstalled)
+                                modsInstalledOld.Add(modInfo);
+                            modsInstalled.Clear();
+                            foreach (Mod modInfo in modsInstalledOld)
+                                modsInstalled.Add(new Mod(modInfo.GetName(), false, modInfo.GetTypes(), modInfo.GetContent()));
+
                             // Reinstall all previously installed mods
-                            foreach (Mod modName in modsInstalled)
-                                Setup.InstallMod_(modName);
+                            foreach (Mod modInfo in modsInstalled)
+                                ModsManager.installMod(modInfo);
                         }
+
+                        // Refresh Profile
+                        Profiles.Default.Refresh();
+
+                        // ----
+
+                        timeRecord_.Stop();
+                        TimeSpan time_ = TimeSpan.FromMilliseconds(timeRecord_.ElapsedMilliseconds);
+                        LogFile.WriteLine("Done " + time_.ToString(@"ss\:fff"));
                     }
                 }
             }

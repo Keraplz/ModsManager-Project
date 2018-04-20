@@ -43,6 +43,10 @@
             this.label_baseinfo = new System.Windows.Forms.Label();
             this.splitter_mods = new System.Windows.Forms.Splitter();
             this.tabOptions = new System.Windows.Forms.TabPage();
+            this.label_info_NFilesModded = new System.Windows.Forms.Label();
+            this.label_info_modsFolder = new System.Windows.Forms.Label();
+            this.label_info_contentFolder = new System.Windows.Forms.Label();
+            this.label_info_gameName = new System.Windows.Forms.Label();
             this.label_title_configuration = new System.Windows.Forms.Label();
             this.textBox_NFilesModded = new System.Windows.Forms.TextBox();
             this.textBox_contentFolder = new System.Windows.Forms.TextBox();
@@ -54,10 +58,6 @@
             this.image_infobg = new System.Windows.Forms.PictureBox();
             this.label_banned = new System.Windows.Forms.Label();
             this.pictureBox_preview = new System.Windows.Forms.PictureBox();
-            this.label_info_gameName = new System.Windows.Forms.Label();
-            this.label_info_contentFolder = new System.Windows.Forms.Label();
-            this.label_info_modsFolder = new System.Windows.Forms.Label();
-            this.label_info_NFilesModded = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabMain.SuspendLayout();
             this.tabOptions.SuspendLayout();
@@ -69,10 +69,10 @@
             // 
             this.tabControl.Controls.Add(this.tabMain);
             this.tabControl.Controls.Add(this.tabOptions);
-            this.tabControl.Location = new System.Drawing.Point(0, 4);
+            this.tabControl.Location = new System.Drawing.Point(0, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(388, 274);
+            this.tabControl.Size = new System.Drawing.Size(388, 278);
             this.tabControl.TabIndex = 0;
             // 
             // tabMain
@@ -88,7 +88,7 @@
             this.tabMain.Location = new System.Drawing.Point(4, 22);
             this.tabMain.Name = "tabMain";
             this.tabMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMain.Size = new System.Drawing.Size(380, 248);
+            this.tabMain.Size = new System.Drawing.Size(380, 252);
             this.tabMain.TabIndex = 0;
             this.tabMain.Text = "Mods";
             this.tabMain.UseVisualStyleBackColor = true;
@@ -200,7 +200,7 @@
             this.splitter_mods.Cursor = System.Windows.Forms.Cursors.Default;
             this.splitter_mods.Location = new System.Drawing.Point(3, 3);
             this.splitter_mods.Name = "splitter_mods";
-            this.splitter_mods.Size = new System.Drawing.Size(374, 242);
+            this.splitter_mods.Size = new System.Drawing.Size(374, 246);
             this.splitter_mods.TabIndex = 8;
             this.splitter_mods.TabStop = false;
             // 
@@ -222,6 +222,42 @@
             this.tabOptions.TabIndex = 1;
             this.tabOptions.Text = "Info";
             this.tabOptions.UseVisualStyleBackColor = true;
+            // 
+            // label_info_NFilesModded
+            // 
+            this.label_info_NFilesModded.AutoSize = true;
+            this.label_info_NFilesModded.Location = new System.Drawing.Point(8, 136);
+            this.label_info_NFilesModded.Name = "label_info_NFilesModded";
+            this.label_info_NFilesModded.Size = new System.Drawing.Size(81, 13);
+            this.label_info_NFilesModded.TabIndex = 4;
+            this.label_info_NFilesModded.Text = "N Files Modded";
+            // 
+            // label_info_modsFolder
+            // 
+            this.label_info_modsFolder.AutoSize = true;
+            this.label_info_modsFolder.Location = new System.Drawing.Point(8, 110);
+            this.label_info_modsFolder.Name = "label_info_modsFolder";
+            this.label_info_modsFolder.Size = new System.Drawing.Size(65, 13);
+            this.label_info_modsFolder.TabIndex = 4;
+            this.label_info_modsFolder.Text = "Mods Folder";
+            // 
+            // label_info_contentFolder
+            // 
+            this.label_info_contentFolder.AutoSize = true;
+            this.label_info_contentFolder.Location = new System.Drawing.Point(8, 84);
+            this.label_info_contentFolder.Name = "label_info_contentFolder";
+            this.label_info_contentFolder.Size = new System.Drawing.Size(76, 13);
+            this.label_info_contentFolder.TabIndex = 4;
+            this.label_info_contentFolder.Text = "Content Folder";
+            // 
+            // label_info_gameName
+            // 
+            this.label_info_gameName.AutoSize = true;
+            this.label_info_gameName.Location = new System.Drawing.Point(8, 58);
+            this.label_info_gameName.Name = "label_info_gameName";
+            this.label_info_gameName.Size = new System.Drawing.Size(35, 13);
+            this.label_info_gameName.TabIndex = 4;
+            this.label_info_gameName.Text = "Game";
             // 
             // label_title_configuration
             // 
@@ -329,42 +365,6 @@
             this.pictureBox_preview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox_preview.TabIndex = 21;
             this.pictureBox_preview.TabStop = false;
-            // 
-            // label_info_gameName
-            // 
-            this.label_info_gameName.AutoSize = true;
-            this.label_info_gameName.Location = new System.Drawing.Point(8, 58);
-            this.label_info_gameName.Name = "label_info_gameName";
-            this.label_info_gameName.Size = new System.Drawing.Size(35, 13);
-            this.label_info_gameName.TabIndex = 4;
-            this.label_info_gameName.Text = "Game";
-            // 
-            // label_info_contentFolder
-            // 
-            this.label_info_contentFolder.AutoSize = true;
-            this.label_info_contentFolder.Location = new System.Drawing.Point(8, 84);
-            this.label_info_contentFolder.Name = "label_info_contentFolder";
-            this.label_info_contentFolder.Size = new System.Drawing.Size(76, 13);
-            this.label_info_contentFolder.TabIndex = 4;
-            this.label_info_contentFolder.Text = "Content Folder";
-            // 
-            // label_info_modsFolder
-            // 
-            this.label_info_modsFolder.AutoSize = true;
-            this.label_info_modsFolder.Location = new System.Drawing.Point(8, 110);
-            this.label_info_modsFolder.Name = "label_info_modsFolder";
-            this.label_info_modsFolder.Size = new System.Drawing.Size(65, 13);
-            this.label_info_modsFolder.TabIndex = 4;
-            this.label_info_modsFolder.Text = "Mods Folder";
-            // 
-            // label_info_NFilesModded
-            // 
-            this.label_info_NFilesModded.AutoSize = true;
-            this.label_info_NFilesModded.Location = new System.Drawing.Point(8, 136);
-            this.label_info_NFilesModded.Name = "label_info_NFilesModded";
-            this.label_info_NFilesModded.Size = new System.Drawing.Size(81, 13);
-            this.label_info_NFilesModded.TabIndex = 4;
-            this.label_info_NFilesModded.Text = "N Files Modded";
             // 
             // MainWindow
             // 

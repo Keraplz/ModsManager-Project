@@ -35,7 +35,7 @@ namespace ModsManager
             logWriter.WriteLine(Environment.NewLine);
         }
 
-        public static void WriteLine(string message)
+        public static void WriteLine(string message, bool end = false)
         {
             if (logWriter == null) return;
             string logMessage = string.Empty;
@@ -43,7 +43,8 @@ namespace ModsManager
             if (useTimeStamp) logMessage += DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss]: ");
             logMessage += message;
 
-            logWriter.WriteLine(logMessage + Environment.NewLine);
+            if (end) logWriter.WriteLine(message);
+            else logWriter.WriteLine(logMessage);
             logWriter.Flush();
         }
 
@@ -59,13 +60,13 @@ namespace ModsManager
             logWriter.Flush();
         }
 
-        public static void WriteEnd(string message)
-        {
-            if (logWriter == null) return;
-
-            logWriter.Write(message + Environment.NewLine);
-            logWriter.Flush();
-        }
+        //public static void WriteEnd(string message)
+        //{
+        //    if (logWriter == null) return;
+        //
+        //    logWriter.Write(message + Environment.NewLine);
+        //    logWriter.Flush();
+        //}
 
         public static void Close()
         {

@@ -8,34 +8,35 @@ namespace ModsManager
 {
     class Search
     {
+        private static String ignoredType = string.Empty;
+        private static String ignoredFile = string.Empty;
+
         public static IList<String> SearchXNB(String sDir, Boolean shouldWrite)
         {
             IList<String> FilesList = new List<String>();
 
             try
             {
-                foreach (string d in Directory.GetDirectories(sDir))
+                foreach (string type in Directory.GetDirectories(sDir))
                 {
-                    foreach (string f in Directory.GetFiles(d, "*.xnb"/*, SearchOption.AllDirectories*/))
+                    foreach (string filePath in Directory.GetFiles(type, "*.xnb"/*, SearchOption.AllDirectories*/))
                     {
-                        string extension = Path.GetExtension(f);
+                        string extension = Path.GetExtension(filePath);
                         if (extension != null && (extension.Equals(".xnb")))
                         {
-                            Definitions.xnbPath.Add(f);
-                            if (Check.Ignored(Path.GetFileName(f), Path.GetDirectoryName(f)))
+                            if (Ignored(Path.GetFileName(filePath), Path.GetDirectoryName(filePath)))
                             {
-                                Definitions.ignoredList.Add(Definitions.ignoredType + " IGNORED" + Definitions.ignoredFile);
+                                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/search.txt"))
+                                    sw.Write(ignoredType + " IGNORED" + ignoredFile);
                             }
                             else
                             {
-                                Definitions.outputName.Add(Path.GetDirectoryName(f) + "  =>  " + Path.GetFileName(f));
-
-                                FilesList.Add(f);
+                                FilesList.Add(filePath);
                             }
                         }
                     }
 
-                    SearchXNB(d, shouldWrite);
+                    SearchXNB(type, shouldWrite);
                 }
 
                 if (shouldWrite)
@@ -60,6 +61,36 @@ namespace ModsManager
             }
 
             return FilesList;
+        }
+
+        private static Boolean Ignored(String filename, String directory)
+        {
+            if (ContainsSFX(filename, directory) || ContainsATLAS(filename))
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        private static Boolean ContainsSFX(String filename, String directory)
+        {
+            String[] directories = directory.Split(Path.DirectorySeparatorChar);
+
+            ignoredType = "SFX";
+            ignoredFile = "   :: " + filename;
+
+            if (directories.ToLookup(i => i.ToLower()).Contains("sfx"))
+                return true;
+            else return false;
+        }
+        private static Boolean ContainsATLAS(String filename)
+        {
+            ignoredType = "ATLAS";
+            ignoredFile = " :: " + filename;
+
+            if (filename.ToLower().Contains("atlas"))
+                return true;
+            else return false;
         }
     }
 }

@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="LogFile.cs" />
     <Compile Include="Mods.cs" />
+    <Compile Include="ModsManager.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="JSON\Base.cs" />
     <Compile Include="Definitions.cs" />

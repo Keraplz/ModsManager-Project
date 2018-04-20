@@ -42,13 +42,6 @@ namespace ModsManager
 
         // ----------------
 
-        public void Ban(Mod mod_info)
-        {
-
-        }
-
-        // ----------------
-
         public Boolean Contains(String Name)
         {
             if (m_Name == Name) return true;

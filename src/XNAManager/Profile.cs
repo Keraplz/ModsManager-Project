@@ -33,29 +33,11 @@ namespace ModsManager
             m_Game = Games.SpeedRunners;
             m_ProgramName = "ModsManager";
             m_WindowName = m_Game.GetName() + " " + m_ProgramName;
-
+            m_Mods = new List<Mod>();
             m_BannedMods = new List<Mod>();
-
-            try
-            {
-                foreach (IList<Mod> modList in Check.GetBannedMods(m_Game))
-                    if (modList.Count() > 1)
-                        foreach (Mod modInstalled in Read.Mods.GetInstalled(m_Game.GetFolderMods()))
-                            if (modList.Contains(modInstalled))
-                                foreach (Mod modInfo in modList)
-                                    if (modInfo != modInstalled)
-                                        if (!m_BannedMods.Contains(modInfo))
-                                            m_BannedMods.Add(modInfo);
-            }
-            catch (Exception e)
-            {
-                using (StreamWriter sw = File.AppendText(m_ProgramName + "/_logs/errorlog.txt"))
-                    sw.Write(e);
-            }
-
             m_PreviewExt = new String[] { ".jpg", ".jpeg", ".png" };
             m_MaintenancePaths = new String[] { "_backup", "_content", "_logs" };
-            m_MaintenanceFiles = new String[] { "install.txt", "uninstall.txt", "ignoredList.txt", "reader_test.txt", "writer.txt", "errorlog.txt" };
+            m_MaintenanceFiles = new String[] { "install.txt", "uninstall.txt", "search.txt" };
             m_XmlUrl = "https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/update.xml";
         }
 
@@ -80,7 +62,7 @@ namespace ModsManager
             m_MaintenancePaths = Profiles.Blank.GetMaintenancePaths();
             m_MaintenanceFiles = Profiles.Blank.GetMaintenanceFiles();
 
-            Setup.Maintenance_(input_programName, input_game, m_MaintenancePaths, m_MaintenanceFiles, false);
+            Setup.Maintenance_(input_programName, input_game, m_MaintenancePaths, m_MaintenanceFiles, true, true);
 
             foreach (string modPath in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
             {
@@ -129,16 +111,16 @@ namespace ModsManager
                 }
                 else m_Mods = Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles);
 
-            IEnumerable<String> subfolders = Directory.EnumerateDirectories(m_Game.GetFolderMods());
-
+            //IEnumerable<String> subfolders = Directory.EnumerateDirectories(m_Game.GetFolderMods());
             //if (!Directory.Exists(m_Game.GetFolderMods()) || subfolders.ToList().Count < 1) m_BannedMods = new List<Mod>();
             //else m_BannedMods = Check.GetBannedMods(m_Game);
 
+            Profiles.Blank.RefreshBannedMods();
             m_BannedMods = Profiles.Blank.GetBannedMods();
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-            LogFile.WriteEnd("Done " + time.ToString(@"ss\:fff"));
+            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
         }
 
         // ----------------
@@ -175,6 +157,9 @@ namespace ModsManager
             if (m_XmlUrl != null) return m_XmlUrl;
             else return Profiles.Default.GetXmlUrl();
         }
+        public IList<Mod> GetMods() {
+            return m_Mods;
+        }
         public IList<Mod> GetBannedMods() {
             return m_BannedMods;
         }
@@ -193,21 +178,45 @@ namespace ModsManager
 
         // ----------------
 
+        public void Refresh() {
+            LogFile.Write("Refreshing Profile . . .  ");
+            var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+
+            m_Mods.Clear();
+            foreach (string modName in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
+                m_Mods.Add(Read.Mods.GetModByName(modName, m_Game.GetFolderMods()));
+
+            m_WindowName = m_Game.GetName() + " " + m_ProgramName;
+            Profiles.Blank.RefreshBannedMods();
+            m_BannedMods = Profiles.Blank.GetBannedMods();
+
+            timeRecord.Stop();
+            TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+        }
+        public Boolean IsBanned(Mod mod_info) {
+            if (m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) return true;
+            else return false;
+        }
         public void BanMod(Mod mod_info) {
-            if (!m_BannedMods.Contains(mod_info)) m_BannedMods.Add(mod_info);
+            if (!m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) m_BannedMods.Add(mod_info);
         }
         public void UnBanMod(Mod mod_info) {
-            if (m_BannedMods.Contains(mod_info)) m_BannedMods.Remove(mod_info);
+            if (m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) m_BannedMods.Remove(mod_info);
         }
 
         public void RefreshBannedMods() {
+            Profiles.Blank.m_BannedMods.Clear();
             m_BannedMods.Clear();
-            foreach (IList<Mod> modList in Check.GetBannedMods(m_Game))
-                foreach (Mod modInstalled in Read.Mods.GetInstalled(m_Game.GetFolderMods()))
-                    if (modList.Contains(modInstalled))
-                        foreach (Mod modInfo in modList)
-                            if (modInfo != modInstalled)
-                                m_BannedMods.Add(modInfo);
+            foreach (IList<Mod> modList in ModsManager.GetBannedMods(m_Game))
+                if (modList.Count() > 1)
+                    foreach (Mod modInstalled in Read.Mods.GetInstalled(m_Game.GetFolderMods()))
+                        if (modList.Any(x => x.GetName() == modInstalled.GetName()))
+                            foreach (Mod modInfo in modList)
+                                if (modInfo.GetName() != modInstalled.GetName())
+                                    if (!m_BannedMods.Any(x => x.GetName() == modInfo.GetName()) || m_BannedMods.Count == 0)
+                                        Profiles.Blank.m_BannedMods.Add(modInfo);
+            m_BannedMods = Profiles.Blank.GetBannedMods();
         }
 
         public void AddMod(Mod mod_info) {

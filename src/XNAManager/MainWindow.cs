@@ -25,9 +25,14 @@ namespace ModsManager
 
         public MainWindow(Profile info_profile)
         {
-            if (File.Exists("Keraplz.AutoUpdate.dll")) File.Delete("Keraplz.AutoUpdate.dll");
-            if (File.Exists("Keraplz.JSON.dll")) File.Delete("Keraplz.JSON.dll");
-            if (File.Exists("Keraplz.Resources.dll")) File.Delete("Keraplz.Resources.dll");
+            try
+            {
+                if (File.Exists("Keraplz.AutoUpdate.dll")) File.Delete("Keraplz.AutoUpdate.dll");
+                if (File.Exists("Keraplz.JSON.dll")) File.Delete("Keraplz.JSON.dll");
+                if (File.Exists("Keraplz.Resources.dll")) File.Delete("Keraplz.Resources.dll");
+                if (Directory.Exists("SRModManager")) Directory.Delete("SRModManager", true);
+            }
+            catch { }
 
             BannedMods = Profiles.Default.GetBannedMods();
 
@@ -266,7 +271,7 @@ namespace ModsManager
         {
             if (button_installmod.Text == "Uninstall")
             {
-                Setup.UninstallMod_(label_title.Text);
+                ModsManager.uninstallMod(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
                 //if (ModsManager.IsSuccessful())
                 //{
                 if (!Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
@@ -281,7 +286,7 @@ namespace ModsManager
             }
             else if (button_installmod.Text == "Install")
             {
-                Setup.InstallMod_(label_title.Text);
+                ModsManager.installMod(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
                 //if (ModsManager.IsSuccessful())
                 //{
                 if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
@@ -316,11 +321,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                
-                {
-                    LogFile.WriteLine("Error found in ModsManager.button_previewmod_Click()");
-                    LogFile.WriteLine(e.Message);
-                }
+                LogFile.WriteLine("Error found in ModsManager.button_previewmod_Click()");
+                LogFile.WriteLine(e.Message);
             }
         }
         private void button_modsfolder_Click(object sender, EventArgs e)
@@ -342,7 +344,7 @@ namespace ModsManager
                 listBox_modslist.Items.Clear();
                 listView_modslist.Items.Clear();
 
-                //Setup.Maintenance_(Profiles.Default.GetProgramName(), Profiles.Default.GetGame(), Profiles.Default.GetMaintenancePaths(), Profiles.Default.GetMaintenanceFiles());
+                Setup.Maintenance_(Profiles.Default.GetProgramName(), Profiles.Default.GetGame(), Profiles.Default.GetMaintenancePaths(), Profiles.Default.GetMaintenanceFiles(), true, false);
 
                 int n = 0;
                 foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
@@ -356,6 +358,8 @@ namespace ModsManager
                     else File.Delete(modName);
                 }
                 n = 0;
+
+                listBox_modslist.SelectedIndex = listBox_modslist.Items.Count - 1;
 
                 listBox_modslist.Enabled = true;
                 listView_modslist.Enabled = true;
@@ -437,7 +441,7 @@ namespace ModsManager
                                 {
                                     if (Keraplz.JSON.Read.Mods.IsInstalled(banned_modName))
                                     {
-                                        Setup.UninstallMod_(listBox_modslist.SelectedItem.ToString());
+                                        ModsManager.uninstallMod(Keraplz.JSON.Read.Mods.GetModByName(listBox_modslist.SelectedItem.ToString()));
                                         //if (ModsManager.IsSuccessful())
                                         //{
                                         if (!Keraplz.JSON.Read.Mods.IsInstalled(listBox_modslist.SelectedItem.ToString()))
@@ -486,6 +490,12 @@ namespace ModsManager
                                         //this.image_infobg.Image = new Bitmap(Image.FromFile(preview));
                                         if (Image.FromFile(preview).Height == Image.FromFile(preview).Width && Image.FromFile(preview).Height < 301 && Image.FromFile(preview).Width < 301)
                                         {
+                                            if (Profiles.Default.IsBanned(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)))
+                                            {
+                                                SetBrightness(this.pictureBox_preview, new Bitmap(Image.FromFile(preview)));
+                                                shouldbreak = true;
+                                                break;
+                                            }
                                             this.pictureBox_preview.Image = Image.FromFile(preview);
                                             shouldbreak = true;
                                             break;
@@ -574,6 +584,23 @@ namespace ModsManager
 
             input_label.Font = font;
         }
+        private void SetBrightness(PictureBox pictureBox, Bitmap image, float limit = 0.5f)
+        {
+            for (int i = 0; i < image.Width; i++)
+            {
+                for (int j = 0; j < image.Height; j++)
+                {
+                    Color c = image.GetPixel(i, j);
+                    if (c.GetBrightness() > limit)
+                    {
+                        image.SetPixel(i, j, Color.White);
+                    }
+                }
+            }
+
+            pictureBox.Image = image;
+        }
+
 
         protected override void OnPaint(PaintEventArgs e)
         {

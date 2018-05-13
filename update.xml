@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <autoUpdate>
 	<update appId="SRModManager">
-		<version>1.9.0.0</version>
+		<version>1.9.0.1</version>
 		<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
 		<fileName>ModsManager.exe</fileName>
-		<md5>1ccf9a218f94445e17c23b16dfbdbf73</md5>
-		<description>16/04/2018 - Better Log System, Error fixes and Optimization</description>
+		<md5>c2c281a475dfa342e63b2539e2919fb5</md5>
+		<description>16/04/2018 - Better Log System, Error fixes and Optimization ~~ 12/05/2018 - Fixed major bugs, thanks ?! ;)</description>
 		<launchArgs>-dev updateProcess</launchArgs>
 	</update>
 </autoUpdate>

@@ -1,6 +1,7 @@
 ﻿using Keraplz.JSON;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,30 +11,56 @@ namespace ModsManager
 {
     class ModsManager
     {
-        public static void uninstallMods()
+        public static void UninstallMods()
         {
             try
             {
                 foreach (Mod modInfo in Profiles.Default.GetMods())
-                    uninstallMod(modInfo);
+                    Uninstall(modInfo);
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.ModsManager.uninstallMods(" + "" + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMods(" + "" + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
-        public static void installMods()
+        public static void InstallMods()
         {
             try
             {
                 foreach (Mod modInfo in Profiles.Default.GetMods())
-                    installMod(modInfo);
+                    Install(modInfo);
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.ModsManager.installMods(" + "" + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.ModsManager.installMods(" + "" + ")");
+                //LogFile.WriteLine(e.Message);
+            }
+        }
+        public static void UninstallMods(IList<Mod> modList)
+        {
+            try
+            {
+                foreach (Mod modInfo in modList)
+                    Uninstall(modInfo);
+            }
+            catch (Exception e)
+            {
+                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMods(IList<Mod> " + "" + ")");
+                //LogFile.WriteLine(e.Message);
+            }
+        }
+        public static void InstallMods(IList<Mod> modList)
+        {
+            try
+            {
+                foreach (Mod modInfo in modList)
+                    Install(modInfo);
+            }
+            catch (Exception e)
+            {
+                LogFile.WriteError(e); // ModsManager.ModsManager.installMods(IList<Mod> " + "" + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         public static void uninstallMod(Mod modInfo)
@@ -90,8 +117,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.ModsManager.uninstallMod(Mod " + modInfo.GetName() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMod(Mod " + modInfo.GetName() + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         public static void installMod(Mod modInfo)
@@ -162,19 +189,180 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.ModsManager.installMod(Mod " + modInfo.GetName() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.ModsManager.installMod(Mod " + modInfo.GetName() + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
 
+        public static Boolean Uninstall(Mod modInfo)
+        {
+            string originalPath = string.Empty;
+            string srcPath = string.Empty;
+            bool IsSuccess = false;
+            int n = 0;
+
+            try
+            {
+                if (!modInfo.isInstalled()) { return false; }
+
+                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
+                    sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+                LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+                var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+
+                // Install Mod Content files one-by-one
+                foreach (string modFile in modInfo.GetContent())
+                {
+                    originalPath = /*GetOriginalPath();*/ modFile.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + "\\".Length + modInfo.GetName().Length + "\\".Length);
+                    srcPath = originalPath.Remove(0, Profiles.Default.GetGame().GetFolderContent().Length + "\\".Length);
+
+                    srcPath = Path.Combine(Profiles.Default.GetProgramName(), "_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName(), srcPath);
+                    try
+                    {
+                        if (!File.Exists(srcPath)) IsSuccess = false;
+                        else if (!File.Exists(originalPath)) IsSuccess = false;
+                        else
+                        {
+                            File.Copy(srcPath, originalPath, true);
+                            n = n + 1;
+                        }
+                    }
+                    catch {
+                        IsSuccess = false;
+                    }
+                }
+
+                // Check if method was successful, if not, return false
+                int i = modInfo.GetContent().Count();
+                if (i == n)
+                    IsSuccess = true;
+                else
+                {
+                    timeRecord.Stop();
+                    TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"), true);
+                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
+                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+
+                    return false;
+                }
+
+                // Edit Mod .json file isInstalled property
+                Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, false);
+
+                timeRecord.Stop();
+                TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
+                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+
+                return IsSuccess;
+            }
+            catch (Exception e)
+            {
+                // Get stack trace for the exception with source file information
+                var trace = new StackTrace(e, true);
+                // Get the top stack frame
+                var frame = trace.GetFrame(0);
+                // Get the line number from the stack frame
+                var line = frame.GetFileLineNumber();
+
+                LogFile.WriteError(e); // ModsManager.ModsManager.UninstallMod(Mod " + modInfo.GetName() + "), line " + line);
+                //LogFile.WriteLine(e.Message);
+
+                return false;
+            }
+        }
+        public static Boolean Install(Mod modInfo)
+        {
+            string originalPath = string.Empty;
+            string srcPath = string.Empty;
+            bool IsSuccess = false;
+            int n = 0;
+
+            try
+            {
+                if (modInfo.isInstalled()) { return false; }
+
+                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
+                    sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+                LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+                var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+
+                // Backup original files
+                FileBackup(modInfo);
+
+                // Install Mod Content files one-by-one
+                foreach (string modFile in modInfo.GetContent())
+                {
+                    srcPath = modFile;
+                    originalPath = modFile.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + "\\".Length + modInfo.GetName().Length + "\\".Length);
+
+                    File.Copy(srcPath, originalPath, true);
+                    n = n + 1;
+                }
+
+                // Check if method was successful, if not, return false
+                if (modInfo.GetContent().Count() == n)
+                    IsSuccess = true;
+                else
+                {
+                    timeRecord.Stop();
+                    TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"), true);
+                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
+                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+
+                    return false;
+                }
+
+                // Edit Mod .json file isInstalled property
+                Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, true);
+
+                timeRecord.Stop();
+                TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
+                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+
+                return IsSuccess;
+            }
+            catch (Exception e)
+            {
+                // Get stack trace for the exception with source file information
+                var trace = new StackTrace(e, true);
+                // Get the top stack frame
+                var frame = trace.GetFrame(0);
+                // Get the line number from the stack frame
+                var line = frame.GetFileLineNumber();
+
+                LogFile.WriteError(e); // ModsManager.ModsManager.InstallMod(Mod " + modInfo.GetName() + "), line " + line);
+                //LogFile.WriteLine(e.Message);
+
+                return false;
+            }
+        }
+
+        public static IList<IList<Mod>> GetBannedMods(Game game_info, IList<Mod> modList)
+        {
+            IList<IList<Mod>> BannedMods = new List<IList<Mod>>();
+
+            foreach (Mod modInfo in modList)
+            {
+                foreach (string ModContent in modInfo.GetContent())
+                    BannedMods.Add(new List<Mod>(Read.Mods.GetContainsMod(ModContent.Remove(0, Path.Combine(game_info.GetFolderMods(), modInfo.GetName()).Length + "\\".Length), game_info.GetFolderMods())));
+            }
+
+            if (BannedMods.Count > 0) return BannedMods;
+            else return null;
+        }
         public static IList<IList<Mod>> GetBannedMods(Game game_info)
         {
             IList<IList<Mod>> BannedMods = new List<IList<Mod>>();
 
-            foreach (string nameer in Directory.GetFiles(game_info.GetFolderMods(), "*.json"))
+            foreach (string modPath in Directory.GetFiles(game_info.GetFolderMods(), "*.json"))
             {
-                IList<String> CurrentModContent = new List<String>();
-                string modName = Path.GetFileNameWithoutExtension(nameer);
+                string modName = Path.GetFileNameWithoutExtension(modPath);
 
                 foreach (string ModContent in Read.Mods.GetContent(modName, game_info.GetFolderMods()))
                     BannedMods.Add(new List<Mod>(Read.Mods.GetContainsMod(ModContent.Remove(0, game_info.GetFolderMods().Length + 2 + modName.Length + 2), game_info.GetFolderMods())));
@@ -184,6 +372,18 @@ namespace ModsManager
             else return null;
         }
 
+        private static string GetOriginalPath(string path, string input_extension = null)
+        {
+            string extension = string.Empty;
+
+            if (input_extension == null)
+                extension = Path.GetExtension(path);
+            else extension = input_extension;
+
+            foreach (string filePath in Directory.GetFiles(Profiles.Default.GetGame().GetFolderContent(), "*" + extension, SearchOption.AllDirectories))
+                if (filePath.ToLower() == path.ToLower()) return filePath;
+            return string.Empty;
+        }
         private static Boolean IsRepeated(IList<String> modFiles)
         {
             try
@@ -196,10 +396,52 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Check.IsRepeated(IList<String> " + ")");
-                LogFile.WriteLine(e.Message);
+                // Get stack trace for the exception with source file information
+                var trace = new StackTrace(e, true);
+                // Get the top stack frame
+                var frame = trace.GetFrame(0);
+                // Get the line number from the stack frame
+                var line = frame.GetFileLineNumber();
+
+                LogFile.WriteError(e); // ModsManager.IsRepeated(IList<String> " + "), line " + line);
+                //LogFile.WriteLine(e.Message);
 
                 return true;
+            }
+        }
+        private static void FileBackup(Mod modInfo)
+        {
+            try
+            {
+                string sPath = Profiles.Default.GetGame().GetFolderContent() + "\\";
+                string dPath = Path.Combine(Profiles.Default.GetProgramName(),"_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName());
+
+                foreach (string modFile_ in modInfo.GetContent())
+                {
+                    string modFile = modFile_.Remove(0, Path.Combine(Profiles.Default.GetGame().GetFolderMods(), modInfo.GetName()).Length + "\\".Length);
+                    sPath = Profiles.Default.GetGame().GetFolderContent() + "\\";
+
+                    if (modFile.ToLower().StartsWith(Profiles.Default.GetGame().GetFolderContent().ToLower()))
+                        sPath = modFile;
+                    else sPath = sPath + modFile;
+
+                    string cDir = dPath + "\\" + Path.GetDirectoryName(sPath).Remove(0, Profiles.Default.GetGame().GetFolderContent().Length + "\\".Length);
+
+                    Directory.CreateDirectory(cDir);
+                    File.Copy(sPath, Path.Combine(cDir, Path.GetFileName(modFile)), true);
+                }
+            }
+            catch (Exception e)
+            {
+                // Get stack trace for the exception with source file information
+                var trace = new StackTrace(e, true);
+                // Get the top stack frame
+                var frame = trace.GetFrame(0);
+                // Get the line number from the stack frame
+                var line = frame.GetFileLineNumber();
+
+                LogFile.WriteError(e); // ModsManager.FileBackup(Mod " + modInfo.GetName() + "), line " + line);
+                //LogFile.WriteLine(e.Message);
             }
         }
         private static void FileBackup(String modName, IList<String> modFiles)
@@ -226,8 +468,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Check.fileBackup(String " + modName + ", IList<String> )");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Check.fileBackup(String " + modName + ", IList<String> )");
+                //LogFile.WriteLine(e.Message);
             }
         }
         private static void dupeDirectories(string startLocation)
@@ -243,5 +485,56 @@ namespace ModsManager
             }
         }
 
+
+        internal static void NormalizeLoad(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void PreventLoad(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void Ban(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void Unban(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void Load(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void Unload(Mod mod)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ModStatus
+    {
+        // Members
+
+        private Boolean m_ShouldLoad;
+        //private Boolean m_IsLoaded;
+
+        // Constructor
+
+        public ModStatus(Boolean ShouldLoad = true)
+        {
+            m_ShouldLoad = ShouldLoad;
+            //m_IsLoaded = IsLoaded;
+        }
+
+        // Getters
+
+        public Boolean GetShouldLoad() { return m_ShouldLoad; }
+        //public Boolean IsLoaded() { return m_IsLoaded; }
     }
 }

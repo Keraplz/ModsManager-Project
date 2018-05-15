@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ModsManager
 {
@@ -28,6 +29,8 @@ namespace ModsManager
         [Newtonsoft.Json.JsonProperty("extensions")]
         private IList<String> m_extensions = new List<String>();
 
+        //private IList<String> m_types = new List<String>();
+
 
         //public Game()
         //{
@@ -40,6 +43,9 @@ namespace ModsManager
             m_contentFolder = input_contentFolder;
             m_modsFolder = input_modsFolder;
             m_extensions = input_extensions;
+
+            //foreach (string type in Keraplz.JSON.Read.Content.GetTypes(m_contentFolder))
+                //m_types.Add(type);
 
             //GameSetup();
         }
@@ -74,5 +80,6 @@ namespace ModsManager
         public string GetFolderContent() { return m_contentFolder; }
         public string GetFolderMods() { return m_modsFolder; }
         public IList<String> GetExtensions() { return m_extensions; }
+        //public IList<String> GetTypes() { return m_types; }
     }
 }

@@ -71,12 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files.cs" />
     <Compile Include="LogFile.cs" />
     <Compile Include="Mods.cs" />
     <Compile Include="ModsManager.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="JSON\Base.cs" />
-    <Compile Include="Definitions.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

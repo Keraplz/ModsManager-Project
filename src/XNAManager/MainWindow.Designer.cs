@@ -31,18 +31,23 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabMain = new System.Windows.Forms.TabPage();
-            this.listBox_modslist = new System.Windows.Forms.ListBox();
+            this.button_unload = new System.Windows.Forms.Button();
+            this.button_installmod = new System.Windows.Forms.Button();
+            this.button_modsfolder = new System.Windows.Forms.Button();
             this.button_refresh = new System.Windows.Forms.Button();
+            this.label_title = new System.Windows.Forms.Label();
+            this.label_modStatus = new System.Windows.Forms.Label();
+            this.pictureBox_preview = new System.Windows.Forms.PictureBox();
             this.label_filesused = new System.Windows.Forms.Label();
             this.label_gui_modslist = new System.Windows.Forms.Label();
             this.listView_modslist = new System.Windows.Forms.ListView();
             this.column_isinstalled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.column_name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column_version = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button_modsfolder = new System.Windows.Forms.Button();
+            this.column_types = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label_baseinfo = new System.Windows.Forms.Label();
             this.splitter_mods = new System.Windows.Forms.Splitter();
             this.tabOptions = new System.Windows.Forms.TabPage();
+            this.button_hardreset = new System.Windows.Forms.Button();
             this.label_info_NFilesModded = new System.Windows.Forms.Label();
             this.label_info_modsFolder = new System.Windows.Forms.Label();
             this.label_info_contentFolder = new System.Windows.Forms.Label();
@@ -52,17 +57,10 @@
             this.textBox_contentFolder = new System.Windows.Forms.TextBox();
             this.textBox_modsFolder = new System.Windows.Forms.TextBox();
             this.textBox_gameName = new System.Windows.Forms.TextBox();
-            this.button_installmod = new System.Windows.Forms.Button();
-            this.label_title = new System.Windows.Forms.Label();
-            this.textBox_type = new System.Windows.Forms.TextBox();
-            this.image_infobg = new System.Windows.Forms.PictureBox();
-            this.label_banned = new System.Windows.Forms.Label();
-            this.pictureBox_preview = new System.Windows.Forms.PictureBox();
             this.tabControl.SuspendLayout();
             this.tabMain.SuspendLayout();
-            this.tabOptions.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.image_infobg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_preview)).BeginInit();
+            this.tabOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -72,54 +70,120 @@
             this.tabControl.Location = new System.Drawing.Point(0, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(388, 278);
+            this.tabControl.Size = new System.Drawing.Size(388, 391);
             this.tabControl.TabIndex = 0;
             // 
             // tabMain
             // 
-            this.tabMain.Controls.Add(this.listBox_modslist);
+            this.tabMain.Controls.Add(this.button_unload);
+            this.tabMain.Controls.Add(this.button_installmod);
+            this.tabMain.Controls.Add(this.button_modsfolder);
             this.tabMain.Controls.Add(this.button_refresh);
+            this.tabMain.Controls.Add(this.label_title);
+            this.tabMain.Controls.Add(this.label_modStatus);
+            this.tabMain.Controls.Add(this.pictureBox_preview);
             this.tabMain.Controls.Add(this.label_filesused);
             this.tabMain.Controls.Add(this.label_gui_modslist);
             this.tabMain.Controls.Add(this.listView_modslist);
-            this.tabMain.Controls.Add(this.button_modsfolder);
             this.tabMain.Controls.Add(this.label_baseinfo);
             this.tabMain.Controls.Add(this.splitter_mods);
             this.tabMain.Location = new System.Drawing.Point(4, 22);
             this.tabMain.Name = "tabMain";
             this.tabMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMain.Size = new System.Drawing.Size(380, 252);
+            this.tabMain.Size = new System.Drawing.Size(380, 365);
             this.tabMain.TabIndex = 0;
             this.tabMain.Text = "Mods";
             this.tabMain.UseVisualStyleBackColor = true;
             // 
-            // listBox_modslist
+            // button_unload
             // 
-            this.listBox_modslist.FormattingEnabled = true;
-            this.listBox_modslist.Location = new System.Drawing.Point(8, 52);
-            this.listBox_modslist.Name = "listBox_modslist";
-            this.listBox_modslist.Size = new System.Drawing.Size(366, 134);
-            this.listBox_modslist.TabIndex = 13;
-            this.listBox_modslist.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listBox_modslist_MouseClick);
-            this.listBox_modslist.SelectedIndexChanged += new System.EventHandler(this.listBox_modslist_SelectedIndexChanged);
+            this.button_unload.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_unload.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_unload.Location = new System.Drawing.Point(136, 315);
+            this.button_unload.Name = "button_unload";
+            this.button_unload.Size = new System.Drawing.Size(113, 30);
+            this.button_unload.TabIndex = 22;
+            this.button_unload.Text = "Unload";
+            this.button_unload.UseVisualStyleBackColor = true;
+            this.button_unload.Visible = false;
+            this.button_unload.Click += new System.EventHandler(this.button_unload_Click);
+            // 
+            // button_installmod
+            // 
+            this.button_installmod.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_installmod.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_installmod.Location = new System.Drawing.Point(255, 315);
+            this.button_installmod.Name = "button_installmod";
+            this.button_installmod.Size = new System.Drawing.Size(113, 30);
+            this.button_installmod.TabIndex = 10;
+            this.button_installmod.Text = "Install";
+            this.button_installmod.UseVisualStyleBackColor = true;
+            this.button_installmod.Click += new System.EventHandler(this.button_installmod_Click);
+            // 
+            // button_modsfolder
+            // 
+            this.button_modsfolder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_modsfolder.Font = new System.Drawing.Font("Consolas", 12F);
+            this.button_modsfolder.Location = new System.Drawing.Point(9, 229);
+            this.button_modsfolder.Name = "button_modsfolder";
+            this.button_modsfolder.Size = new System.Drawing.Size(122, 30);
+            this.button_modsfolder.TabIndex = 17;
+            this.button_modsfolder.Text = "Mods Folder";
+            this.button_modsfolder.UseVisualStyleBackColor = true;
+            this.button_modsfolder.Click += new System.EventHandler(this.button_modsfolder_Click);
             // 
             // button_refresh
             // 
             this.button_refresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button_refresh.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_refresh.Location = new System.Drawing.Point(134, 196);
+            this.button_refresh.Location = new System.Drawing.Point(137, 229);
             this.button_refresh.Name = "button_refresh";
-            this.button_refresh.Size = new System.Drawing.Size(120, 30);
+            this.button_refresh.Size = new System.Drawing.Size(113, 30);
             this.button_refresh.TabIndex = 20;
             this.button_refresh.Text = "Refresh";
             this.button_refresh.UseVisualStyleBackColor = true;
             this.button_refresh.Click += new System.EventHandler(this.button_refresh_Click);
             // 
+            // label_title
+            // 
+            this.label_title.Font = new System.Drawing.Font("Arial", 21.75F);
+            this.label_title.Location = new System.Drawing.Point(91, 261);
+            this.label_title.Name = "label_title";
+            this.label_title.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label_title.Size = new System.Drawing.Size(283, 36);
+            this.label_title.TabIndex = 4;
+            this.label_title.Text = "no_name_found";
+            this.label_title.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // label_modStatus
+            // 
+            this.label_modStatus.AutoSize = true;
+            this.label_modStatus.BackColor = System.Drawing.SystemColors.Control;
+            this.label_modStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_modStatus.ForeColor = System.Drawing.Color.Gray;
+            this.label_modStatus.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label_modStatus.Location = new System.Drawing.Point(94, 293);
+            this.label_modStatus.Name = "label_modStatus";
+            this.label_modStatus.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label_modStatus.Size = new System.Drawing.Size(36, 17);
+            this.label_modStatus.TabIndex = 20;
+            this.label_modStatus.Text = "IDLE";
+            // 
+            // pictureBox_preview
+            // 
+            this.pictureBox_preview.BackColor = System.Drawing.SystemColors.Control;
+            this.pictureBox_preview.Location = new System.Drawing.Point(9, 265);
+            this.pictureBox_preview.Name = "pictureBox_preview";
+            this.pictureBox_preview.Size = new System.Drawing.Size(80, 80);
+            this.pictureBox_preview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox_preview.TabIndex = 21;
+            this.pictureBox_preview.TabStop = false;
+            // 
             // label_filesused
             // 
             this.label_filesused.AutoSize = true;
             this.label_filesused.BackColor = System.Drawing.SystemColors.Control;
-            this.label_filesused.Location = new System.Drawing.Point(314, 189);
+            this.label_filesused.Location = new System.Drawing.Point(311, 10);
             this.label_filesused.Name = "label_filesused";
             this.label_filesused.Size = new System.Drawing.Size(60, 13);
             this.label_filesused.TabIndex = 19;
@@ -130,32 +194,31 @@
             // 
             this.label_gui_modslist.AutoSize = true;
             this.label_gui_modslist.BackColor = System.Drawing.SystemColors.Control;
-            this.label_gui_modslist.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_gui_modslist.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_gui_modslist.ForeColor = System.Drawing.Color.Black;
-            this.label_gui_modslist.Location = new System.Drawing.Point(12, 20);
+            this.label_gui_modslist.Location = new System.Drawing.Point(6, 10);
             this.label_gui_modslist.Name = "label_gui_modslist";
-            this.label_gui_modslist.Size = new System.Drawing.Size(71, 16);
+            this.label_gui_modslist.Size = new System.Drawing.Size(72, 17);
             this.label_gui_modslist.TabIndex = 18;
             this.label_gui_modslist.Text = "Mods List :";
             // 
             // listView_modslist
             // 
-            this.listView_modslist.AllowDrop = true;
             this.listView_modslist.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listView_modslist.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.column_isinstalled,
             this.column_name,
-            this.column_version});
+            this.column_types});
             this.listView_modslist.FullRowSelect = true;
+            this.listView_modslist.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView_modslist.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.listView_modslist.Location = new System.Drawing.Point(8, 52);
+            this.listView_modslist.Location = new System.Drawing.Point(8, 30);
             this.listView_modslist.MultiSelect = false;
             this.listView_modslist.Name = "listView_modslist";
-            this.listView_modslist.Size = new System.Drawing.Size(366, 134);
+            this.listView_modslist.Size = new System.Drawing.Size(360, 194);
             this.listView_modslist.TabIndex = 17;
             this.listView_modslist.UseCompatibleStateImageBehavior = false;
             this.listView_modslist.View = System.Windows.Forms.View.Details;
-            this.listView_modslist.Visible = false;
             this.listView_modslist.SelectedIndexChanged += new System.EventHandler(this.listView_modslist_SelectedIndexChanged);
             // 
             // column_isinstalled
@@ -166,46 +229,35 @@
             // column_name
             // 
             this.column_name.Text = "Name";
-            this.column_name.Width = 124;
+            this.column_name.Width = 171;
             // 
-            // column_version
+            // column_types
             // 
-            this.column_version.Text = "Version";
-            this.column_version.Width = 48;
-            // 
-            // button_modsfolder
-            // 
-            this.button_modsfolder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button_modsfolder.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_modsfolder.Location = new System.Drawing.Point(8, 196);
-            this.button_modsfolder.Name = "button_modsfolder";
-            this.button_modsfolder.Size = new System.Drawing.Size(120, 30);
-            this.button_modsfolder.TabIndex = 17;
-            this.button_modsfolder.Text = "Mods Folder";
-            this.button_modsfolder.UseVisualStyleBackColor = true;
-            this.button_modsfolder.Click += new System.EventHandler(this.button_modsfolder_Click);
+            this.column_types.Text = "Types";
+            this.column_types.Width = 165;
             // 
             // label_baseinfo
             // 
             this.label_baseinfo.AutoSize = true;
             this.label_baseinfo.BackColor = System.Drawing.SystemColors.Control;
-            this.label_baseinfo.Location = new System.Drawing.Point(9, 229);
+            this.label_baseinfo.Location = new System.Drawing.Point(8, 348);
             this.label_baseinfo.Name = "label_baseinfo";
-            this.label_baseinfo.Size = new System.Drawing.Size(359, 13);
+            this.label_baseinfo.Size = new System.Drawing.Size(365, 13);
             this.label_baseinfo.TabIndex = 14;
-            this.label_baseinfo.Text = "Game: no_game_found, Build: 000, SetupTime: 00:000, Installed Mods: 00";
+            this.label_baseinfo.Text = "Game: no_game_found, Build: 000, StartupTime: 00:000, Installed Mods: 00";
             // 
             // splitter_mods
             // 
             this.splitter_mods.Cursor = System.Windows.Forms.Cursors.Default;
             this.splitter_mods.Location = new System.Drawing.Point(3, 3);
             this.splitter_mods.Name = "splitter_mods";
-            this.splitter_mods.Size = new System.Drawing.Size(374, 246);
+            this.splitter_mods.Size = new System.Drawing.Size(374, 359);
             this.splitter_mods.TabIndex = 8;
             this.splitter_mods.TabStop = false;
             // 
             // tabOptions
             // 
+            this.tabOptions.Controls.Add(this.button_hardreset);
             this.tabOptions.Controls.Add(this.label_info_NFilesModded);
             this.tabOptions.Controls.Add(this.label_info_modsFolder);
             this.tabOptions.Controls.Add(this.label_info_contentFolder);
@@ -218,10 +270,23 @@
             this.tabOptions.Location = new System.Drawing.Point(4, 22);
             this.tabOptions.Name = "tabOptions";
             this.tabOptions.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOptions.Size = new System.Drawing.Size(380, 248);
+            this.tabOptions.Size = new System.Drawing.Size(380, 365);
             this.tabOptions.TabIndex = 1;
             this.tabOptions.Text = "Info";
             this.tabOptions.UseVisualStyleBackColor = true;
+            // 
+            // button_hardreset
+            // 
+            this.button_hardreset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_hardreset.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_hardreset.Location = new System.Drawing.Point(261, 332);
+            this.button_hardreset.Name = "button_hardreset";
+            this.button_hardreset.Size = new System.Drawing.Size(113, 30);
+            this.button_hardreset.TabIndex = 24;
+            this.button_hardreset.Text = "Hard Reset";
+            this.button_hardreset.UseVisualStyleBackColor = true;
+            this.button_hardreset.Visible = false;
+            this.button_hardreset.Click += new System.EventHandler(this.button_hardreset_Click);
             // 
             // label_info_NFilesModded
             // 
@@ -300,84 +365,12 @@
             this.textBox_gameName.Size = new System.Drawing.Size(146, 20);
             this.textBox_gameName.TabIndex = 0;
             // 
-            // button_installmod
-            // 
-            this.button_installmod.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button_installmod.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_installmod.Location = new System.Drawing.Point(390, 245);
-            this.button_installmod.Name = "button_installmod";
-            this.button_installmod.Size = new System.Drawing.Size(231, 30);
-            this.button_installmod.TabIndex = 10;
-            this.button_installmod.Text = "Install";
-            this.button_installmod.UseVisualStyleBackColor = true;
-            this.button_installmod.Click += new System.EventHandler(this.button_installmod_Click);
-            // 
-            // label_title
-            // 
-            this.label_title.Font = new System.Drawing.Font("Arial", 21.75F);
-            this.label_title.Location = new System.Drawing.Point(392, 63);
-            this.label_title.Name = "label_title";
-            this.label_title.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label_title.Size = new System.Drawing.Size(224, 36);
-            this.label_title.TabIndex = 4;
-            this.label_title.Text = "no_name_found";
-            this.label_title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // textBox_type
-            // 
-            this.textBox_type.Location = new System.Drawing.Point(390, 219);
-            this.textBox_type.Name = "textBox_type";
-            this.textBox_type.ReadOnly = true;
-            this.textBox_type.Size = new System.Drawing.Size(231, 20);
-            this.textBox_type.TabIndex = 2;
-            this.textBox_type.Text = "no_type_found";
-            // 
-            // image_infobg
-            // 
-            this.image_infobg.BackColor = System.Drawing.Color.Transparent;
-            this.image_infobg.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.image_infobg.Cursor = System.Windows.Forms.Cursors.Default;
-            this.image_infobg.Location = new System.Drawing.Point(390, 46);
-            this.image_infobg.Name = "image_infobg";
-            this.image_infobg.Size = new System.Drawing.Size(231, 193);
-            this.image_infobg.TabIndex = 19;
-            this.image_infobg.TabStop = false;
-            this.image_infobg.Visible = false;
-            // 
-            // label_banned
-            // 
-            this.label_banned.Font = new System.Drawing.Font("Arial", 20F);
-            this.label_banned.ForeColor = System.Drawing.Color.Gray;
-            this.label_banned.Location = new System.Drawing.Point(392, 99);
-            this.label_banned.Name = "label_banned";
-            this.label_banned.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label_banned.Size = new System.Drawing.Size(224, 36);
-            this.label_banned.TabIndex = 20;
-            this.label_banned.Text = "BANNED";
-            this.label_banned.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label_banned.Visible = false;
-            // 
-            // pictureBox_preview
-            // 
-            this.pictureBox_preview.Location = new System.Drawing.Point(462, 133);
-            this.pictureBox_preview.Name = "pictureBox_preview";
-            this.pictureBox_preview.Size = new System.Drawing.Size(80, 80);
-            this.pictureBox_preview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox_preview.TabIndex = 21;
-            this.pictureBox_preview.TabStop = false;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(625, 279);
-            this.Controls.Add(this.pictureBox_preview);
-            this.Controls.Add(this.label_banned);
-            this.Controls.Add(this.label_title);
+            this.ClientSize = new System.Drawing.Size(384, 392);
             this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.textBox_type);
-            this.Controls.Add(this.button_installmod);
-            this.Controls.Add(this.image_infobg);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -388,12 +381,10 @@
             this.tabControl.ResumeLayout(false);
             this.tabMain.ResumeLayout(false);
             this.tabMain.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_preview)).EndInit();
             this.tabOptions.ResumeLayout(false);
             this.tabOptions.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.image_infobg)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_preview)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -403,19 +394,16 @@
         private System.Windows.Forms.TabPage tabMain;
         private System.Windows.Forms.Splitter splitter_mods;
         private System.Windows.Forms.Label label_title;
-        private System.Windows.Forms.TextBox textBox_type;
         private System.Windows.Forms.Button button_installmod;
-        private System.Windows.Forms.ListBox listBox_modslist;
         private System.Windows.Forms.Label label_baseinfo;
         private System.Windows.Forms.Button button_modsfolder;
         private System.Windows.Forms.Label label_gui_modslist;
         private System.Windows.Forms.ListView listView_modslist;
         private System.Windows.Forms.ColumnHeader column_name;
-        private System.Windows.Forms.ColumnHeader column_version;
-        private System.Windows.Forms.PictureBox image_infobg;
+        private System.Windows.Forms.ColumnHeader column_types;
         private System.Windows.Forms.Label label_filesused;
         private System.Windows.Forms.Button button_refresh;
-        private System.Windows.Forms.Label label_banned;
+        private System.Windows.Forms.Label label_modStatus;
         private System.Windows.Forms.ColumnHeader column_isinstalled;
         private System.Windows.Forms.PictureBox pictureBox_preview;
         private System.Windows.Forms.TabPage tabOptions;
@@ -428,5 +416,7 @@
         private System.Windows.Forms.Label label_info_modsFolder;
         private System.Windows.Forms.Label label_info_contentFolder;
         private System.Windows.Forms.Label label_info_gameName;
+        private System.Windows.Forms.Button button_unload;
+        private System.Windows.Forms.Button button_hardreset;
     }
 }

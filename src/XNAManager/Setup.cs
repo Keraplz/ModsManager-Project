@@ -63,8 +63,8 @@ namespace ModsManager
             {
                 
                 {
-                    LogFile.WriteLine("Error found in ModsManager.Setup.WriteJSON_(" + config.ToString() + ")");
-                    LogFile.WriteLine(e.Message);
+                    LogFile.WriteError(e); // ModsManager.Setup.WriteJSON_(" + config.ToString() + ")");
+                    //LogFile.WriteLine(e.Message);
                 }
             }
         }
@@ -87,240 +87,6 @@ namespace ModsManager
             }
             return count;
         }
-        
-        public static IList<Mod> GetBannedModsOld(Game game_info)
-        {
-            IDictionary<String, Int32> modsContainsDict = new Dictionary<String, Int32>();
-            IDictionary<String, Int32> dictionary = new Dictionary<String, Int32>();
-            IList<Int32> TimesRepeated = new List<Int32>();
-            IList<String> ContentChecked = new List<String>();
-
-            IList<Mod> BannedMods = new List<Mod>();
-
-            try
-            {
-                foreach (string nameer in Directory.GetFiles(game_info.GetFolderMods(), "*.json"))
-                {
-                    IList<String> CurrentModContent = new List<String>();
-                    string ModName = Path.GetFileNameWithoutExtension(nameer);
-
-                    foreach (string ModContent in Read.Mods.GetContent(ModName, game_info.GetFolderMods()))
-                        CurrentModContent.Add(ModContent.Remove(0, game_info.GetFolderMods().Length + 2 + ModName.Length + 2));
-
-                    if (CurrentModContent != null)
-                    {
-                        foreach (string content_ in CurrentModContent)
-                        {
-                            string content_base = content_.ToLower();
-
-                            if (dictionary.ContainsKey(content_base))
-                                dictionary[content_base] += 1;
-                            else dictionary.Add(content_base, 1);
-                        }
-
-                        CurrentModContent.Clear();
-                    }
-                }
-
-                foreach (string nameer in Directory.GetFiles(game_info.GetFolderMods(), "*.json"))
-                {
-                    int n = 0;
-                    IList<String> CurrentModContent = new List<String>();
-                    string ModName = Path.GetFileNameWithoutExtension(nameer);
-
-                    foreach (string ModContent in Read.Mods.GetContent(ModName, game_info.GetFolderMods()))
-                    {
-                        CurrentModContent.Add(ModContent.Remove(0, game_info.GetFolderMods().Length + 2 + ModName.Length + 2));
-                    }
-
-                    foreach (string content_ in CurrentModContent)
-                    {
-                        string content_base = content_.ToLower();
-
-                        foreach (KeyValuePair<String, Int32> contentDict in Keraplz.JSON.Read.Mods.GetContainsDict(content_base, game_info.GetFolderMods()))
-                        {
-                            if (!modsContainsDict.ContainsKey(contentDict.Key))
-                                modsContainsDict.Add(contentDict);
-                        }
-
-                        if (ContentChecked.Contains(content_base)) { }
-                        else
-                        {
-                            n = dictionary[content_base];
-                            TimesRepeated.Add(dictionary[content_base]);
-
-                            ContentChecked.Add(content_base);
-                        }
-
-                        if (Keraplz.JSON.Read.Mods.Contains(content_base, game_info.GetFolderMods()))
-                        {
-                            IList<String> modsContains = Keraplz.JSON.Read.Mods.GetContains(content_base, game_info.GetFolderMods());
-
-                            var modsCList = modsContainsDict.ToList();
-                            modsCList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
-
-                            int n_ = 0;
-                            if (n_ < n - 1)
-                                while (n_ < n - 1)
-                                {
-                                    foreach (KeyValuePair<String, Int32> mod in modsCList)
-                                    {
-                                        if (n_ == n - 1) { goto BREAK; }
-                                        else
-                                        {
-                                            if (!BannedMods.Contains(Read.Mods.GetModByName(mod.Key, game_info.GetFolderMods())))
-                                                BannedMods.Add(Read.Mods.GetModByName(mod.Key, game_info.GetFolderMods()));
-
-                                            n_ = n_ + 1;
-                                        }
-                                    }
-
-                                BREAK: ;
-                                }
-                        }
-                    }
-
-                    CurrentModContent.Clear();
-                    modsContainsDict.Clear();
-                }
-
-                if (BannedMods.Count > 0) return BannedMods;
-                else return null;
-            }
-            catch (Exception e)
-            {
-                if (!Directory.Exists(Profiles.Blank.GetProgramName() + "/_logs/")) Directory.CreateDirectory(Profiles.Blank.GetProgramName() + "/_logs/");
-                
-                {
-                    LogFile.WriteLine("Error found in ModsManager.Check.GetBannedMods(" + game_info.GetName() + ")");
-                    LogFile.WriteLine(e.Message);
-                }
-
-                return null;
-            }
-        }
-        public static IList<String> GetBannedMods()
-        {
-            IDictionary<String, Int32> modsContainsDict = new Dictionary<String, Int32>();
-            IDictionary<String, Int32> dictionary = new Dictionary<String, Int32>();
-            IList<Int32> TimesRepeated = new List<Int32>();
-            IList<String> ContentChecked = new List<String>();
-
-            IList<String> BannedMods = new List<String>();
-
-            try
-            {
-                foreach (string nameer in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
-                {
-                    IList<String> CurrentModContent = new List<String>();
-                    string ModName = Path.GetFileNameWithoutExtension(nameer);
-
-                    foreach (string ModContent in Read.Mods.GetContent(ModName))
-                    {
-                        CurrentModContent.Add(ModContent.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + 2 + ModName.Length + 2));
-                    }
-
-                    if (CurrentModContent != null)
-                    {
-                        
-                        foreach (string content_ in CurrentModContent)
-                        {
-                            string content_base = content_.ToLower();
-
-                            if (dictionary.ContainsKey(content_base))
-                            {
-                                dictionary[content_base] += 1;
-                            }
-                            else
-                            {
-                                dictionary.Add(content_base, 1);
-                            }
-                        }
-
-                        CurrentModContent.Clear();
-                    }
-                }
-
-                foreach (string nameer in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
-                {
-                    int n = 0;
-                    IList<String> CurrentModContent = new List<String>();
-                    string ModName = Path.GetFileNameWithoutExtension(nameer);
-
-                    foreach (string ModContent in Read.Mods.GetContent(ModName))
-                    {
-                        CurrentModContent.Add(ModContent.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + 2 + ModName.Length + 2));
-                    }
-
-                    foreach (string content_ in CurrentModContent)
-                    {
-                        string content_base = content_.ToLower();
-
-                        foreach (KeyValuePair<String, Int32> contentDict in Keraplz.JSON.Read.Mods.GetContainsDict(content_base))
-                        {
-                            if (!modsContainsDict.ContainsKey(contentDict.Key))
-                                modsContainsDict.Add(contentDict);
-                        }
-
-                        if (ContentChecked.Contains(content_base)) { }
-                        else
-                        {
-                            n = dictionary[content_base];
-                            TimesRepeated.Add(dictionary[content_base]);
-
-                            ContentChecked.Add(content_base);
-                        }
-
-                        if (Keraplz.JSON.Read.Mods.Contains(content_base))
-                        {
-                            IList<String> modsContains = Keraplz.JSON.Read.Mods.GetContains(content_base);
-
-                            var modsCList = modsContainsDict.ToList();
-                            modsCList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
-
-                            int n_ = 0;
-                            if (n_ < n - 1)
-                                while (n_ < n - 1)
-                                {
-                                    foreach (KeyValuePair<String, Int32> mod in modsCList)
-                                    {
-                                        if (n_ == n - 1) { goto BREAK; }
-                                        else
-                                        {
-                                            if (BannedMods.Contains(mod.Key)) { }
-                                            else BannedMods.Add(mod.Key);
-
-                                            n_ = n_ + 1;
-                                        }
-                                    }
-
-                                    BREAK:;
-                                }
-                        }
-                    }
-
-                    CurrentModContent.Clear();
-                    modsContainsDict.Clear();
-                }
-
-                BannedMods = BannedMods.Distinct().ToList();
-
-                if (BannedMods.Count > 0)
-                    return BannedMods;
-                else return null;
-            }
-            catch (Exception e)
-            {
-                if (!Directory.Exists(Profiles.Default.GetProgramName() + "/_logs/")) Directory.CreateDirectory(Profiles.Default.GetProgramName() + "/_logs/");
-                
-                {
-                    LogFile.WriteLine("Error found in ModsManager.Check.GetBannedMods(" + "" + ")");
-                    LogFile.WriteLine(e.Message);
-                }
-
-                return null;
-            }
-        }
 
         public static string GetCurrentVersion()
         {
@@ -334,8 +100,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Check.GetCurrentVersion(" + "" + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Check.GetCurrentVersion(" + "" + ")");
+                //LogFile.WriteLine(e.Message);
 
                 return string.Empty;
             }
@@ -352,8 +118,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Check.GetCurrentBuild(" + "" + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Check.GetCurrentBuild(" + "" + ")");
+                //LogFile.WriteLine(e.Message);
 
                 return 0;
             }
@@ -487,8 +253,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Maintenance.WriteModDefinitions(Game " + Game.GetName() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Maintenance.WriteModDefinitions(Game " + Game.GetName() + ")");
+                //LogFile.WriteLine(e.Message);
             }
 
             return Mods;
@@ -527,8 +293,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Maintenance.WriteModDefinitions(Profile, Boolean " + skip.ToString() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Maintenance.WriteModDefinitions(Profile, Boolean " + skip.ToString() + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         public static void WriteModDefinitions(Boolean skip)
@@ -562,8 +328,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Maintenance.WriteModDefinitions(Boolean " + skip.ToString() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Maintenance.WriteModDefinitions(Boolean " + skip.ToString() + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         public static void ResetLogs(String ProgramName, String[] FileArray)

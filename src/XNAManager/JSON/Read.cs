@@ -59,7 +59,17 @@ namespace Keraplz.JSON
                 IList<String> Types = new List<String>();
 
                 foreach (string type in Directory.EnumerateDirectories(Profiles.Default.GetGame().GetFolderContent()))
-                    Types.Add(type);
+                    Types.Add(Path.GetFileName(type));
+
+                return Types;
+            }
+            public static IList<String> GetTypes(string contentDir)
+            {
+                IList<String> Types = new List<String>();
+                if (contentDir == null) contentDir = Profiles.Default.GetGame().GetFolderContent();
+
+                foreach (string type in Directory.EnumerateDirectories(contentDir))
+                    Types.Add(Path.GetFileName(type));
 
                 return Types;
             }
@@ -282,6 +292,30 @@ namespace Keraplz.JSON
                     {
                         Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(modsFolder + "/" + modName + ".json"));
                         return new Mod(modName, mods_info_.isInstalled, mods_info_.Type, mods_info_.Content);
+                        //Mod modJson = new Mod(modName, mods_info_.isInstalled, mods_info_.Type, mods_info_.Content);
+                        //foreach (Mod modInfo in modList)
+                        //{
+                        //    if (modInfo.GetName() == modJson.GetName())
+                        //        return modInfo;
+                        //}
+                    }
+                }
+                return null;
+            }
+            public static Mod GetModByName(String input_modname, String modsFolder, IList<Mod> modList)
+            {
+                foreach (string modPath in Directory.GetFiles(modsFolder, "*.json"))
+                {
+                    string modName = Path.GetFileNameWithoutExtension(modPath);
+                    if (input_modname == modName)
+                    {
+                        Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(modsFolder + "/" + modName + ".json"));
+                        Mod modJson = new Mod(modName, mods_info_.isInstalled, mods_info_.Type, mods_info_.Content);
+                        foreach (Mod modInfo in modList)
+                        {
+                            if (modInfo.GetName() == modJson.GetName())
+                                return modInfo;
+                        }
                     }
                 }
                 return null;
@@ -294,10 +328,39 @@ namespace Keraplz.JSON
                     if (input_modname == modName)
                     {
                         Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(Profiles.Default.GetGame().GetFolderMods() + "/" + modName + ".json"));
-                        return new Mod(modName, mods_info_.isInstalled, mods_info_.Type, mods_info_.Content);
+                        Mod modJson = new Mod(modName, mods_info_.isInstalled, mods_info_.Type, mods_info_.Content);
+                        foreach (Mod modInfo in Profiles.Default.GetMods())
+                        {
+                            if (modInfo.GetName() == modJson.GetName())
+                                return modInfo;
+                        }
                     }
                 }
                 return null;
+            }
+            public static Boolean PreventLoad(String input_modname, String modsFolder)
+            {
+                try {
+                    Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(modsFolder + "/" + input_modname + ".json")/*, new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Error
+                    }*/);
+
+                    return mods_info_.preventLoad;
+                } catch (JsonSerializationException e) { return false; }
+            }
+            public static Boolean PreventLoad(String input_modname)
+            {
+                try
+                {
+                    Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(Profiles.Default.GetGame().GetFolderMods() + "/" + input_modname + ".json")/*, new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Error
+                    }*/);
+
+                    return mods_info_.preventLoad;
+                }
+                catch (JsonSerializationException e) { return false; }
             }
             public static Boolean IsInstalled(String input_modname, String modsFolder)
             {

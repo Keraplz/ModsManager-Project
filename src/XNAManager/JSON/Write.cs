@@ -76,8 +76,8 @@ namespace Keraplz.JSON
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in Keraplz.JSON.Write.WriteJSON(" + typefi + ", " + filepathfi + ", " + "IList<string>" + ", " + filenamefi + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // Keraplz.JSON.Write.WriteJSON(" + typefi + ", " + filepathfi + ", " + "IList<string>" + ", " + filenamefi + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
 
@@ -106,13 +106,47 @@ namespace Keraplz.JSON
                 }
                 catch (Exception e)
                 {
-                    LogFile.WriteLine("Error found in Keraplz.JSON.Write.ModDefinion(Mod " + mod_info.GetName() + ", " + game_info.GetName() + ")");
-                    LogFile.WriteLine(e.Message);
+                    LogFile.WriteError(e); // Keraplz.JSON.Write.ModDefinion(Mod " + mod_info.GetName() + ", " + game_info.GetName() + ")");
+                    //LogFile.WriteLine(e.Message);
                 }
             }
 
             public class Edit
             {
+                public static bool Load(Mod modInfo, Boolean shouldLoad)
+                {
+                    try
+                    {
+                        modInfo.Refresh();
+
+                        Base.Mods Mod = new Base.Mods
+                        {
+                            Name = modInfo.GetName(),
+                            isInstalled = modInfo.isInstalled(),
+                            preventLoad = !shouldLoad,
+                            Type = modInfo.GetTypes(),
+                            Content = modInfo.GetContent()
+                        };
+
+                        // serialize JSON directly to a file
+                        using (StreamWriter file = File.CreateText(Path.Combine(Profiles.Default.GetGame().GetFolderMods(), modInfo.GetName() + ".json")))
+                        {
+                            JsonSerializer serializer = new JsonSerializer();
+                            serializer.Formatting = Formatting.Indented;
+                            serializer.Serialize(file, Mod);
+                            file.Close();
+                        }
+
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        LogFile.WriteError(e); // Keraplz.JSON.Write.ModDefinion.Edit.Installed(Mod " + modInfo.GetName() + ", Boolean " + shouldLoad.ToString() + ")");
+                        //LogFile.WriteLine(e.Message);
+                    }
+
+                    return false;
+                }
                 public static void Installed(Mod mod_info)
                 {
                     IList<String> towrite_types = new List<String>();
@@ -148,53 +182,40 @@ namespace Keraplz.JSON
                     }
                     catch (Exception e)
                     {
-                        LogFile.WriteLine("Error found in Keraplz.JSON.Write.ModDefinion.Edit.Installed(Mod " + mod_info.GetName() + ")");
-                        LogFile.WriteLine(e.Message);
+                        LogFile.WriteError(e); // Keraplz.JSON.Write.ModDefinion.Edit.Installed(Mod " + mod_info.GetName() + ")");
+                        //LogFile.WriteLine(e.Message);
 
                         towrite_types.Clear();
                         towrite_content.Clear();
                     }
                 }
-                public static void Installed(Mod mod_info, Boolean input_isInstalled)
+                public static void Installed(Mod modInfo, Boolean input_isInstalled)
                 {
-                    IList<String> towrite_types = new List<String>();
-                    IList<String> towrite_content = new List<String>();
-
                     try
                     {
-                        foreach (String toClean in mod_info.GetTypes())
-                            towrite_types.Add(toClean);
-
-                        foreach (String toClean in mod_info.GetContent())
-                            towrite_content.Add(toClean.Replace("\\", "/"));
+                        modInfo.Refresh();
 
                         Base.Mods Mod = new Base.Mods
                         {
-                            Name = mod_info.GetName(),
+                            Name = modInfo.GetName(),
                             isInstalled = input_isInstalled,
-                            Type = mod_info.GetTypes(),
-                            Content = mod_info.GetContent()
+                            Type = modInfo.GetTypes(),
+                            Content = modInfo.GetContent()
                         };
 
                         // serialize JSON directly to a file
-                        using (StreamWriter file = File.CreateText(Profiles.Default.GetGame().GetFolderMods() + "/" + mod_info.GetName() + ".json"))
+                        using (StreamWriter file = File.CreateText(Path.Combine(Profiles.Default.GetGame().GetFolderMods(), modInfo.GetName() + ".json")))
                         {
                             JsonSerializer serializer = new JsonSerializer();
                             serializer.Formatting = Formatting.Indented;
                             serializer.Serialize(file, Mod);
                             file.Close();
                         }
-
-                        towrite_types.Clear();
-                        towrite_content.Clear();
                     }
                     catch (Exception e)
                     {
-                        LogFile.WriteLine("Error found in Keraplz.JSON.Write.ModDefinion.Edit.Installed(Mod" + mod_info.GetName() + ", Boolean" + input_isInstalled.ToString() + ")");
-                        LogFile.WriteLine(e.Message);
-
-                        towrite_types.Clear();
-                        towrite_content.Clear();
+                        LogFile.WriteError(e); // Keraplz.JSON.Write.ModDefinion.Edit.Installed(Mod " + modInfo.GetName() + ", Boolean " + input_isInstalled.ToString() + ")");
+                        //LogFile.WriteLine(e.Message);
                     }
                 }
                 public static void Installed(String json_filename, Boolean input_isInstalled)
@@ -231,8 +252,8 @@ namespace Keraplz.JSON
                     }
                     catch (Exception e)
                     {
-                        LogFile.WriteLine("Error found in Keraplz.JSON.Write.ModDefinion_edit_installed(" + json_filename + ", " + input_isInstalled.ToString() + ")");
-                        LogFile.WriteLine(e.Message);
+                        LogFile.WriteError(e); // Keraplz.JSON.Write.ModDefinion_edit_installed(" + json_filename + ", " + input_isInstalled.ToString() + ")");
+                        //LogFile.WriteLine(e.Message);
 
                         towrite_types.Clear();
                         towrite_content.Clear();
@@ -266,8 +287,8 @@ namespace Keraplz.JSON
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in Keraplz.JSON.Write.Configuration(String " + ProgramName + ", Game " + Game.GetName() + ", String[], String[])");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // Keraplz.JSON.Write.Configuration(String " + ProgramName + ", Game " + Game.GetName() + ", String[], String[])");
+                //LogFile.WriteLine(e.Message);
             }
 
             return Mods;
@@ -297,8 +318,8 @@ namespace Keraplz.JSON
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in Keraplz.JSON.Write.Configuration(String " + ProgramName + ", Game " + Game.GetName() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // Keraplz.JSON.Write.Configuration(String " + ProgramName + ", Game " + Game.GetName() + ")");
+                //LogFile.WriteLine(e.Message);
             }
 
             return Mods;
@@ -326,8 +347,8 @@ namespace Keraplz.JSON
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in Keraplz.JSON.Write.Configuration(" + input_Profile.GetGame().GetName() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // Keraplz.JSON.Write.Configuration(" + input_Profile.GetGame().GetName() + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         public static void Configuration()
@@ -441,20 +462,16 @@ namespace Keraplz.JSON
             }
             catch (Exception e)
             {
-                
-                {
-                    LogFile.WriteLine("Error found in Keraplz.JSON.Write.Configuration(" + ")");
-                    LogFile.WriteLine(e.Message);
-                }
+                LogFile.WriteError(e); // Keraplz.JSON.Write.Configuration(" + ")");
+                //LogFile.WriteLine(e.Message);
             }
         }
         
 
         private static void setPath(string path)
         {
-            foreach (String type_ in Read.Content.GetTypes())
+            foreach (String type in Read.Content.GetTypes(Profiles.Default.GetGame().GetFolderContent()))
             {
-                string type = Path.GetFileName(type_);
                 if (path.EndsWith(type + "/") || path.EndsWith(type))
                 {
                     pather = type;

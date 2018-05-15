@@ -21,9 +21,21 @@ namespace ModsManager
         FontFamily ff;
         Font font;
 
+        Color Default = SystemColors.Window;
+        Color Installed = Color.LightGreen;
+        Color Banned = Color.Red;
+        Color nonLoaded = Color.Yellow;
+        Color Selected = SystemColors.Highlight;
+
+        private string GameVer = string.Empty;
+        private string StartupTime = string.Empty;
+        private int NInstalledMods = 0;
+
         private IList<Mod> BannedMods;
 
-        public MainWindow(Profile info_profile)
+        private bool Dev = false;
+
+        public MainWindow(string uptime, bool m_Dev = false)
         {
             try
             {
@@ -35,6 +47,7 @@ namespace ModsManager
             catch { }
 
             BannedMods = Profiles.Default.GetBannedMods();
+            Dev = m_Dev;
 
             //Profiles.Default = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Games.SpeedRunners, Keraplz.JSON.Read.Configuration.GetUIGraphics());
 
@@ -43,30 +56,61 @@ namespace ModsManager
             this.Text = Profiles.Default.GetWindowName() + " [" + this.ApplicationAssembly.GetName().Version.ToString() + "]";
             updater = new AutoUpdate(this);
 
+            GameVer = Check.GetCurrentVersion();
+            StartupTime = uptime;
+            NInstalledMods = Keraplz.JSON.Read.Mods.GetNInstalled();
+
             textBox_gameName.Text = Profiles.Default.GetGame().GetName() + " " + Check.GetCurrentVersion();
             textBox_contentFolder.Text = Profiles.Default.GetGame().GetFolderContent();
             textBox_modsFolder.Text = Profiles.Default.GetGame().GetFolderMods();
-            textBox_NFilesModded.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + " | " + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
 
-            label_baseinfo.Text = Definitions.toLabel_baseinfo;
-            //label_filesused.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + "/" + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
+            Label_UpdateInfo(Profiles.Default.GetGame());
 
+            IList<Mod> modList = new List<Mod>();
             int n = 0;
-            foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
+            string modTypes = string.Empty;
+            Color modStatus = Color.Empty;
+
+            //foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json")) modList.Add(Keraplz.JSON.Read.Mods.GetModByName(Path.GetFileNameWithoutExtension(modName)));
+            //foreach (Mod modInfo in modList)
+            foreach (Mod modInfo in Profiles.Default.GetMods())
             {
-                if (Directory.Exists(Profiles.Default.GetGame().GetFolderMods() + "/" + Path.GetFileNameWithoutExtension(modName)))
+                if (Directory.Exists(Profiles.Default.GetGame().GetFolderMods() + "/" + modInfo.GetName()))
                 {
-                    listBox_modslist.Items.Insert(n, Path.GetFileNameWithoutExtension(modName));
-            //        ListViewItem item = new ListViewItem(new String[] { "", Path.GetFileNameWithoutExtension(modName), "Test" });
-            //        item.UseItemStyleForSubItems = false;
-            //        item.SubItems[0].BackColor = Color.Gray;
-            //        listView_modslist.Items.Insert(n, item);
+                    modTypes = string.Empty;
+                    modStatus = Color.Empty;
+
+                    int i = 0;
+                    if (i < modInfo.GetTypes().Count)
+                    {
+                        foreach (string modType in modInfo.GetTypes())
+                        {
+                            foreach (string gameType in Keraplz.JSON.Read.Content.GetTypes(Profiles.Default.GetGame().GetFolderContent()))
+                            {
+                                if (gameType.ToLower() == modType.ToLower())
+                                {
+                                    modTypes += gameType;
+                                    i = i + 1;
+
+                                    if (i < modInfo.GetTypes().Count)
+                                        modTypes += ", ";
+                                }
+                            }
+                        }
+                    }
+                    if (modInfo.isInstalled()) modStatus = Installed;
+                    else if (modInfo.isBanned()) modStatus = Banned;
+
+                    ListViewItem modItem = new ListViewItem(new String[] { string.Empty, modInfo.GetName(), modTypes });
+                    modItem.UseItemStyleForSubItems = false;
+                    modItem.SubItems[0].BackColor = modStatus;
+                    modItem.SubItems[0].ForeColor = modStatus;
+                    listView_modslist.Items.Insert(n, modItem);
+
                     n = n + 1;
                 }
-                else File.Delete(modName);
+                else File.Delete(modInfo.GetName());
             }
-            //listView_modslist.Items[0].SubItems[0].BackColor = Color.Red;
-            //listView_modslist.Items[0].SubItems[0].ForeColor = Color.Red;
 
             //if (button_previewmod.Enabled) button_previewmod.Enabled = false;
             //if (button_previewmod.BackColor != Color.LightGray) button_previewmod.BackColor = Color.LightGray;
@@ -75,9 +119,12 @@ namespace ModsManager
 
             if (n != 0)
             {
-                listBox_modslist.SelectedIndex = 0;
-                modsList_IndexChanged(listBox_modslist.SelectedIndex);
+                listView_modslist.Items[0].Selected = true;
+                IndexChanged(0);
             }
+
+            if (Dev) button_unload.Visible = true;
+            if (Dev) button_hardreset.Visible = true;
 
             updater.DoUpdate();
         }
@@ -85,245 +132,104 @@ namespace ModsManager
         private void MainWindow_Load(object sender, EventArgs e)
         {
             SetFont(label_title, global::ModsManager.Properties.Resources.Coolvetica, 21.75F);
-            SetFont(label_banned, global::ModsManager.Properties.Resources.Coolvetica, 20F);
+            //SetFont(label_modStatus, global::ModsManager.Properties.Resources.Coolvetica, 20F);
 
             if (label_title.Visible) TransparentBackground(label_title);
-            if (label_title.Visible) TransparentBackground(label_banned);
+            if (label_modStatus.Visible) TransparentBackground(label_modStatus);
             if (label_baseinfo.Visible) TransparentBackground(label_baseinfo);
-        }
-
-        private void listView_modslist_MouseClick(object sender, MouseEventArgs e)
-        {
-            //string tolabel_types = "";
-            //string baseName = Definitions.toLabel_modName;
-            //foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
-            //{
-            //    Definitions.toLabel_modName = Path.GetFileNameWithoutExtension(modName);
-            //    if (Definitions.toLabel_modName == listView_modslist.SelectedItems.ToString())
-            //    {
-            //        label_title.Text = listView_modslist.SelectedItems.ToString();
-            //        textBox_author.Text = Keraplz.JSON.Read.Mods.GetAuthor(Definitions.toLabel_modName);
-            //
-            //        #region Set "button_installmod" Text and Behavior
-            //
-            //        if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
-            //        {
-            //            button_installmod.Text = "Uninstall";
-            //        }
-            //        else button_installmod.Text = "Install";
-            //
-            //        #endregion
-            //
-            //        #region Get mod Type List and set textBox_type.Text
-            //
-            //        int n = 0;
-            //        if (n < Keraplz.JSON.Read.Mods.GetNType(Definitions.toLabel_modName))
-            //        {
-            //            foreach (string type in Keraplz.JSON.Read.Mods.GetType(Definitions.toLabel_modName))
-            //            {
-            //                tolabel_types = tolabel_types + type;
-            //                n = n + 1;
-            //
-            //                if (n < Keraplz.JSON.Read.Mods.GetNType(Definitions.toLabel_modName))
-            //                {
-            //                    tolabel_types = tolabel_types + ", ";
-            //                }
-            //            }
-            //
-            //            textBox_type.Text = tolabel_types;
-            //        }
-            //
-            //        #endregion
-            //
-            //        #region Enable Buttons
-            //
-            //        //if (!button_previewmod.Enabled) button_previewmod.Enabled = true;
-            //        //if (button_previewmod.BackColor != Color.Transparent) button_previewmod.BackColor = Color.Transparent;
-            //        if (!button_installmod.Enabled) button_installmod.Enabled = true;
-            //        if (button_installmod.BackColor != Color.Transparent) button_installmod.BackColor = Color.Transparent;
-            //
-            //        #endregion
-            //
-            //        #region Check if mod is banned and change install button behavior
-            //
-            //        if (Check.GetModsToBan() != null)
-            //        {
-            //            foreach (string bannedmod in Check.GetModsToBan())
-            //            {
-            //                if (bannedmod == listBox_modslist.SelectedItem.ToString())
-            //                {
-            //                    if (Keraplz.JSON.Read.Mods.IsInstalled(bannedmod))
-            //                    {
-            //                        Setup.UninstallMod_(listBox_modslist.SelectedItem.ToString());
-            //                        //if (ModsManager.IsSuccessful())
-            //                        //{
-            //                        if (!Keraplz.JSON.Read.Mods.IsInstalled(listBox_modslist.SelectedItem.ToString()))
-            //                            button_installmod.Text = "Install";
-            //
-            //                        Definitions.toLabel_baseinfo_InstalledMods = Definitions.toLabel_baseinfo_InstalledMods - 1;
-            //                        Label_UpdateInstalledCount(Definitions.toLabel_baseinfo_InstalledMods);
-            //                        //}
-            //                    }
-            //
-            //                    //button_installmod.Text = "Banned";
-            //                    if (button_installmod.Enabled) button_installmod.Enabled = false;
-            //                    if (button_installmod.BackColor != Color.LightGray) button_installmod.BackColor = Color.LightGray;
-            //                    if (label_title.ForeColor != Color.Gray) label_title.ForeColor = Color.Gray;
-            //
-            //                    break;
-            //                }
-            //                else
-            //                {
-            //                    //button_installmod.Text = "Banned";
-            //                    if (!button_installmod.Enabled) button_installmod.Enabled = true;
-            //                    if (button_installmod.BackColor != Color.Transparent) button_installmod.BackColor = Color.Transparent;
-            //                    if (label_title.ForeColor != Color.Black) label_title.ForeColor = Color.Black;
-            //                }
-            //            }
-            //        }
-            //
-            //        #endregion
-            //
-            //        #region Set mod Preview if available
-            //
-            //        if (label_title.Text == Definitions.toLabel_modName)
-            //        {
-            //            Boolean shouldbreak = false;
-            //            foreach (string extension in Definitions.previewExtensions)
-            //            {
-            //                foreach (string preview in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods() + "/" + label_title.Text, "*" + extension))
-            //                {
-            //                    if (preview != null)
-            //                    {
-            //                        //this.image_infobg.Image = new Bitmap(Image.FromFile(preview));
-            //                        this.image_infobg.Image = Image.FromFile(preview);
-            //                        shouldbreak = true;
-            //                        break;
-            //                    }
-            //                }
-            //                if (shouldbreak) break;
-            //            }
-            //
-            //            if (shouldbreak)
-            //                this.image_infobg.Image = null;
-            //        }
-            //        else this.image_infobg.Image = null;
-            //
-            //        #endregion
-            //
-            //        textBox_description.Text = "    " + Keraplz.JSON.Read.Mods.GetDescription(Definitions.toLabel_modName);
-            //    }
-            //
-            //    Definitions.toLabel_modName = baseName;
-            //}
-            //
-            //#region Disable/Enable Preview button based on existence of image file
-            //
-            //int nPreview = 0;
-            //foreach (string extension in Definitions.previewExtensions)
-            //{
-            //    foreach (string preview in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods() + "/" + label_title.Text, "*" + extension))
-            //    {
-            //        nPreview = nPreview + 1;
-            //    }
-            //}
-            //
-            //if (nPreview == 0)
-            //{
-            //    button_previewmod.Enabled = false;
-            //    button_previewmod.BackColor = Color.LightGray;
-            //}
-            //else
-            //{
-            //    button_previewmod.Enabled = true;
-            //    button_previewmod.BackColor = Color.Transparent;
-            //
-            //    nPreview = 0;
-            //}
-            //
-            //#endregion
         }
 
         private void listView_modslist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listView_modslist.SelectedItems.Count > 0)
+            if (listView_modslist.SelectedItems.Count == 1)
             {
-                ListViewItem item = listView_modslist.SelectedItems[0];
+                IndexChanged(listView_modslist.SelectedIndices[0]);
+
+                // Deselect ListView to hide Highlight Color
+                if (listView_modslist.FocusedItem != null)
+                    listView_modslist.FocusedItem.Focused = false;
+                if (listView_modslist.SelectedItems.Count != 0)
+                    listView_modslist.SelectedItems[0].Selected = false;
             }
             else
             {
             }
         }
-        private void listBox_modslist_MouseClick(object sender, MouseEventArgs e)
+
+        private void button_hardreset_Click(object sender, EventArgs e)
         {
-            //Setup.Maintenance_(Profiles.Default, true, true, true);
 
-            int index = this.listBox_modslist.IndexFromPoint(e.Location);
-
-            modsList_IndexChanged(index);
         }
-        private void listBox_modslist_SelectedIndexChanged(object sender, EventArgs e)
+        private void button_unload_Click(object sender, EventArgs e)
         {
-            modsList_IndexChanged(listBox_modslist.SelectedIndex);
-        }
+            try {
+                //Mod SelectedMod = Keraplz.JSON.Read.Mods.GetModByName(listView_modslist.SelectedItems[listView_modslist.SelectedIndices[1]].SubItems[1].Text);
+            } catch { }
 
+            Mod SelectedMod = Keraplz.JSON.Read.Mods.GetModByName(label_title.Text);
+
+            if (button_unload.Text == "Unload")
+            {
+                Boolean Success = Profiles.Default.Unload(SelectedMod);
+                if (Success)
+                {
+                    if (!Profiles.Default.isLoaded(SelectedMod))
+                        button_unload.Text = "Load";
+
+                    if (Dev) BannedMods.Remove(SelectedMod);
+                    else BannedMods = Profiles.Default.GetBannedMods();
+                }
+            }
+            else if (button_unload.Text == "Load")
+            {
+                Boolean Success = Profiles.Default.Load(SelectedMod);
+                if (Success)
+                {
+                    if (Profiles.Default.isLoaded(SelectedMod))
+                        button_unload.Text = "Unload";
+
+                    if (Dev) BannedMods.Add(SelectedMod);
+                    else BannedMods = Profiles.Default.GetBannedMods();
+                }
+            }
+
+            //Profiles.Default.Unload(SelectedMod);
+        }
         private void button_installmod_Click(object sender, EventArgs e)
         {
             if (button_installmod.Text == "Uninstall")
             {
-                ModsManager.uninstallMod(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
-                //if (ModsManager.IsSuccessful())
-                //{
-                if (!Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
-                    button_installmod.Text = "Install";
+                Boolean Success = ModsManager.Uninstall(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
+                if (Success)
+                {
+                    if (!Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
+                        button_installmod.Text = "Install";
 
-                Profiles.Default.RefreshBannedMods();
-                BannedMods = Profiles.Default.GetBannedMods();
+                    Profiles.Default.Refresh();
+                    BannedMods = Profiles.Default.GetBannedMods();
 
-                Definitions.toLabel_baseinfo_InstalledMods = Definitions.toLabel_baseinfo_InstalledMods - 1;
-                Label_UpdateInstalledCount(Definitions.toLabel_baseinfo_InstalledMods);
-                //}
+                    NInstalledMods = NInstalledMods - 1;
+                    Label_UpdateInfo(Profiles.Default.GetGame());
+                }
             }
             else if (button_installmod.Text == "Install")
             {
-                ModsManager.installMod(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
-                //if (ModsManager.IsSuccessful())
-                //{
-                if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
-                    button_installmod.Text = "Uninstall";
-
-                Profiles.Default.RefreshBannedMods();
-                BannedMods = Profiles.Default.GetBannedMods();
-
-                Definitions.toLabel_baseinfo_InstalledMods = Definitions.toLabel_baseinfo_InstalledMods + 1;
-                Label_UpdateInstalledCount(Definitions.toLabel_baseinfo_InstalledMods);
-                //}
-            }
-        }
-        private void button_previewmod_Click(object sender, EventArgs ea)
-        {
-            try
-            {
-                Boolean catchPreview = false;
-                if (label_title.Text != Definitions.toLabel_modName)
+                Boolean Success = ModsManager.Install(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
+                if (Success)
                 {
-                    foreach (string extension in Profiles.Default.GetPreviewExt())
-                    {
-                        if (catchPreview == false)
-                            foreach (string preview in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods() + "/" + label_title.Text, "*" + extension))
-                            {
-                                string path = System.IO.Directory.GetCurrentDirectory() + "/" + preview;
-                                Process.Start(path);
-                                catchPreview = true;
-                            }
-                    }
+                    if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
+                        button_installmod.Text = "Uninstall";
+
+                    Profiles.Default.Refresh();
+                    BannedMods = Profiles.Default.GetBannedMods();
+
+                    NInstalledMods = NInstalledMods + 1;
+                    Label_UpdateInfo(Profiles.Default.GetGame());
                 }
             }
-            catch (Exception e)
-            {
-                LogFile.WriteLine("Error found in ModsManager.button_previewmod_Click()");
-                LogFile.WriteLine(e.Message);
-            }
+
+            Label_UpdateStatus(label_title.Text);
+            RefreshListViewColors(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text), false, true);
         }
         private void button_modsfolder_Click(object sender, EventArgs e)
         {
@@ -333,66 +239,115 @@ namespace ModsManager
         }
         private void button_refresh_Click(object sender, EventArgs ea)
         {
+            IList<Mod> modList = new List<Mod>();
+            int n = 0;
+            string modTypes = string.Empty;
+            Color modStatus = Color.Empty;
+
+            button_refresh.Enabled = false;
+            button_modsfolder.Enabled = false;
+            button_installmod.Enabled = false;
+
+            listView_modslist.Enabled = false;
+
             try
             {
-                button_refresh.Enabled = false;
-                button_modsfolder.Enabled = false;
-
-                listBox_modslist.Enabled = false;
-                listView_modslist.Enabled = false;
-
-                listBox_modslist.Items.Clear();
                 listView_modslist.Items.Clear();
 
                 Setup.Maintenance_(Profiles.Default.GetProgramName(), Profiles.Default.GetGame(), Profiles.Default.GetMaintenancePaths(), Profiles.Default.GetMaintenanceFiles(), true, false);
 
-                int n = 0;
-                foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
+                Profiles.Default.Refresh();
+                BannedMods = Profiles.Default.GetBannedMods();
+
+                //foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json")) modList.Add(Keraplz.JSON.Read.Mods.GetModByName(Path.GetFileNameWithoutExtension(modName)));
+                //foreach (Mod modInfo in modList)
+                foreach (Mod modInfo in Profiles.Default.GetMods())
                 {
-                    if (Directory.Exists(Profiles.Default.GetGame().GetFolderMods() + "/" + Path.GetFileNameWithoutExtension(modName)))
+                    if (!modInfo.isLoaded())
                     {
-                        listBox_modslist.Items.Insert(n, Path.GetFileNameWithoutExtension(modName));
-                        //listView_modslist.Items.Insert(n, new ListViewItem(new String[] { "", Path.GetFileNameWithoutExtension(modName), "Test" }));
+                        ListViewItem modItem = new ListViewItem(new String[] { string.Empty, modInfo.GetName(), string.Empty });
+                        modItem.UseItemStyleForSubItems = false;
+                        modItem.SubItems[0].BackColor = nonLoaded;
+                        modItem.SubItems[0].ForeColor = nonLoaded;
+                        listView_modslist.Items.Insert(n, modItem);
+
                         n = n + 1;
                     }
-                    else File.Delete(modName);
+                    else
+                    {
+                        if (Directory.Exists(Path.Combine(Profiles.Default.GetGame().GetFolderMods(), modInfo.GetName())))
+                        {
+                            modTypes = string.Empty;
+                            int i = 0;
+                            if (i < modInfo.GetTypes().Count)
+                            {
+                                foreach (string modType in modInfo.GetTypes())
+                                {
+                                    modTypes += modType;
+                                    i = i + 1;
+
+                                    if (i < modInfo.GetTypes().Count)
+                                        modTypes += ", ";
+                                }
+                            }
+
+                            ListViewItem modItem = new ListViewItem(new String[] { string.Empty, modInfo.GetName(), modTypes });
+                            modItem.UseItemStyleForSubItems = false;
+                            modItem.SubItems[0].BackColor = Default;
+                            modItem.SubItems[0].ForeColor = Default;
+                            listView_modslist.Items.Insert(n, modItem);
+
+                            n = n + 1;
+                        }
+                        else File.Delete(modInfo.GetName());
+                    }
                 }
-                n = 0;
-
-                listBox_modslist.SelectedIndex = listBox_modslist.Items.Count - 1;
-
-                listBox_modslist.Enabled = true;
-                listView_modslist.Enabled = true;
-
-                button_refresh.Enabled = true;
-                button_modsfolder.Enabled = true;
+                if (n != 0)
+                {
+                    listView_modslist.Items[0].Selected = true;
+                    IndexChanged(0);
+                }
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.button_refresh_Click()");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.button_refresh_Click(), line " + line);
+                //LogFile.WriteLine(e.Message);
             }
+
+            Label_UpdateStatus(label_title.Text);
+
+            listView_modslist.Enabled = true;
+
+            button_refresh.Enabled = true;
+            button_modsfolder.Enabled = true;
+            button_installmod.Enabled = true;
         }
 
-        private void modsList_IndexChanged(Int32 input_index)
+        private void IndexChanged(Int32 Index)
         {
-            int n = 0;
-            string tolabel_types = "";
+            Boolean IsSelected = false;
+            Boolean IsBanned = false;
+            Boolean IsInstalled = false;
+            Boolean IsLoaded = false;
 
-            if (input_index != System.Windows.Forms.ListBox.NoMatches)
+            if (Index != System.Windows.Forms.ListBox.NoMatches)
             {
-                string baseName = Definitions.toLabel_modName;
-                foreach (string modPath in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json"))
+                foreach (Mod modInfo in Profiles.Default.GetMods())
                 {
-                    Definitions.toLabel_modName = Path.GetFileNameWithoutExtension(modPath);
-                    if (Definitions.toLabel_modName == listBox_modslist.SelectedItem.ToString())
+                    //if (Definitions.toLabel_modName == listBox_modslist.SelectedItem.ToString())
+                    if (modInfo.GetName() == listView_modslist.Items[Index].SubItems[1].Text)
                     {
-                        label_title.Text = listBox_modslist.SelectedItem.ToString();
-                        //textBox_author.Text = Keraplz.JSON.Read.Mods.GetAuthor(Definitions.toLabel_modName);
+                        IsSelected = true;
 
+                        //label_title.Text = listBox_modslist.SelectedItem.ToString();
+                        label_title.Text = listView_modslist.Items[Index].SubItems[1].Text;
+                        //textBox_author.Text = Keraplz.JSON.Read.Mods.GetAuthor(Definitions.toLabel_modName);
                         #region Set "button_installmod" Text and Behavior
 
-                        if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
+                        if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text)) IsInstalled = true;
+                        else IsInstalled = false;
+
+                        if (IsInstalled)
                         {
                             button_installmod.Text = "Uninstall";
                         }
@@ -400,31 +355,21 @@ namespace ModsManager
 
                         #endregion
 
-                        #region Get mod Type List and set textBox_type.Text
+                        if (Profiles.Default.isLoaded(modInfo)) IsLoaded = true;
+                        else IsLoaded = false;
 
-                        if (n < Keraplz.JSON.Read.Mods.GetNType(Definitions.toLabel_modName))
+                        if (IsLoaded)
                         {
-                            foreach (string type in Keraplz.JSON.Read.Mods.GetType(Definitions.toLabel_modName))
-                            {
-                                tolabel_types = tolabel_types + type;
-                                n = n + 1;
-
-                                if (n < Keraplz.JSON.Read.Mods.GetNType(Definitions.toLabel_modName))
-                                {
-                                    tolabel_types = tolabel_types + ", ";
-                                }
-                            }
-
-                            textBox_type.Text = tolabel_types;
+                            button_unload.Text = "Unload";
                         }
+                        else button_unload.Text = "Load";
 
-                        #endregion
 
                         #region Enable Buttons
 
                         //if (!button_previewmod.Enabled) button_previewmod.Enabled = true;
                         //if (button_previewmod.BackColor != Color.Transparent) button_previewmod.BackColor = Color.Transparent;
-                        if (!button_installmod.Enabled) button_installmod.Enabled = true;
+                        //if (!button_installmod.Enabled) button_installmod.Enabled = true;
                         if (button_installmod.BackColor != Color.Transparent) button_installmod.BackColor = Color.Transparent;
 
                         #endregion
@@ -433,32 +378,33 @@ namespace ModsManager
 
                         if (BannedMods != null)
                         {
-                            Boolean IsBanned = false;
-                            foreach (Mod bannedmod in BannedMods)
+                            foreach (Mod BannedModInfo in BannedMods)
                             {
-                                string banned_modName = bannedmod.GetName();
-                                if (banned_modName == listBox_modslist.SelectedItem.ToString())
+                                string BannedModName = BannedModInfo.GetName();
+                                //if (banned_modName == listBox_modslist.SelectedItem.ToString())
+                                if (BannedModName == listView_modslist.Items[Index].SubItems[1].Text)
                                 {
-                                    if (Keraplz.JSON.Read.Mods.IsInstalled(banned_modName))
+                                    if (BannedModInfo.isInstalled())
                                     {
-                                        ModsManager.uninstallMod(Keraplz.JSON.Read.Mods.GetModByName(listBox_modslist.SelectedItem.ToString()));
+                                        ModsManager.Uninstall(BannedModInfo);
                                         //if (ModsManager.IsSuccessful())
                                         //{
-                                        if (!Keraplz.JSON.Read.Mods.IsInstalled(listBox_modslist.SelectedItem.ToString()))
+                                        //if (!Keraplz.JSON.Read.Mods.IsInstalled(listBox_modslist.SelectedItem.ToString()))
+                                        if (!BannedModInfo.isInstalled())
                                             button_installmod.Text = "Install";
 
-                                        Definitions.toLabel_baseinfo_InstalledMods = Definitions.toLabel_baseinfo_InstalledMods - 1;
-                                        Label_UpdateInstalledCount(Definitions.toLabel_baseinfo_InstalledMods);
+                                        NInstalledMods = NInstalledMods - 1;
+                                        Label_UpdateInfo(Profiles.Default.GetGame());
                                         //}
                                     }
 
                                     IsBanned = true;
 
                                     //button_installmod.Text = "Banned";
-                                    if (button_installmod.Enabled) button_installmod.Enabled = false;
-                                    if (button_installmod.BackColor != Color.LightGray) button_installmod.BackColor = Color.LightGray;
-                                    if (label_title.ForeColor != Color.Gray) label_title.ForeColor = Color.Gray;
-                                    if (!label_banned.Visible) label_banned.Visible = true;
+                                    //if (button_installmod.Enabled) button_installmod.Enabled = false;
+                                    //if (button_installmod.BackColor != Color.LightGray) button_installmod.BackColor = Color.LightGray;
+                                    //if (label_title.ForeColor != Color.Gray) label_title.ForeColor = Color.Gray;
+                                    //if (!label_modStatus.Visible) label_modStatus.Visible = true;
 
                                     break;
                                 }
@@ -467,10 +413,10 @@ namespace ModsManager
                             if (!IsBanned)
                             {
                                 //button_installmod.Text = "Banned";
-                                if (!button_installmod.Enabled) button_installmod.Enabled = true;
-                                if (button_installmod.BackColor != Color.Transparent) button_installmod.BackColor = Color.Transparent;
-                                if (label_title.ForeColor != Color.Black) label_title.ForeColor = Color.Black;
-                                if (label_banned.Visible) label_banned.Visible = false;
+                                //if (!button_installmod.Enabled) button_installmod.Enabled = true;
+                                //if (button_installmod.BackColor != Color.Transparent) button_installmod.BackColor = Color.Transparent;
+                                //if (label_title.ForeColor != Color.Black) label_title.ForeColor = Color.Black;
+                                //if (label_modStatus.Visible) label_modStatus.Visible = false;
                             }
                         }
 
@@ -478,7 +424,7 @@ namespace ModsManager
 
                         #region Set mod Preview if available
 
-                        if (label_title.Text == Definitions.toLabel_modName)
+                        if (label_title.Text == modInfo.GetName())
                         {
                             Boolean shouldbreak = false;
                             foreach (string extension in Profiles.Default.GetPreviewExt())
@@ -490,12 +436,12 @@ namespace ModsManager
                                         //this.image_infobg.Image = new Bitmap(Image.FromFile(preview));
                                         if (Image.FromFile(preview).Height == Image.FromFile(preview).Width && Image.FromFile(preview).Height < 301 && Image.FromFile(preview).Width < 301)
                                         {
-                                            if (Profiles.Default.IsBanned(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)))
-                                            {
-                                                SetBrightness(this.pictureBox_preview, new Bitmap(Image.FromFile(preview)));
-                                                shouldbreak = true;
-                                                break;
-                                            }
+                                            //if (Profiles.Default.isBanned(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)))
+                                            //{
+                                            //    SetBrightness(this.pictureBox_preview, new Bitmap(Image.FromFile(preview)));
+                                            //    shouldbreak = true;
+                                            //    break;
+                                            //}
                                             this.pictureBox_preview.Image = Image.FromFile(preview);
                                             shouldbreak = true;
                                             break;
@@ -506,31 +452,130 @@ namespace ModsManager
                                 else this.pictureBox_preview.Image = null;
                             }
 
-                            if (shouldbreak)
-                                this.image_infobg.Image = null;
+                            if (!shouldbreak)
+                            {
+                                label_title.Location = new System.Drawing.Point(9, 261);
+                                label_modStatus.Location = new System.Drawing.Point(9, 293);
+                            }
+                            else
+                            {
+                                label_title.Location = new System.Drawing.Point(91, 261);
+                                label_modStatus.Location = new System.Drawing.Point(94, 293);
+                            }
+
+                            //if (shouldbreak)
+                            //    this.image_infobg.Image = null;
                         }
-                        else this.image_infobg.Image = null;
+                        //else this.image_infobg.Image = null;
 
                         #endregion
 
+                        Label_UpdateStatus(modInfo);
+                        RefreshListViewColors(modInfo, IsBanned, IsSelected);
+
                         //textBox_description.Text = "    " + Keraplz.JSON.Read.Mods.GetDescription(Definitions.toLabel_modName);
                     }
-
-                    Definitions.toLabel_modName = baseName;
                 }
             }
         }
 
-        private void Label_UpdateInstalledCount(int input_installedMods)
+        private void Label_UpdateStatus(Mod modInfo)
         {
-            Definitions.toLabel_baseinfo = "Game: " + Profiles.Default.GetGame().GetName() + ", Build: " + Definitions.toLabel_baseinfo_CurrentBuild + ", SetupTime: " + Definitions.toLabel_baseinfo_SetupTime + ", Installed Mods: " + input_installedMods.ToString("00");
-            label_baseinfo.Text = Definitions.toLabel_baseinfo;
+            if (!modInfo.isLoaded() && !modInfo.isBanned())
+            {
+                label_modStatus.Text = "DISABLED";
+
+                if (modInfo.isInstalled()) label_modStatus.Text += " - INSTALLED";
+
+                button_installmod.Enabled = false;
+                button_installmod.BackColor = Color.LightGray;
+            }
+            else if (modInfo.isBanned())
+            {
+                label_modStatus.Text = "BANNED";
+                button_installmod.Enabled = false;
+                button_installmod.BackColor = Color.LightGray;
+            }
+            else if (modInfo.isInstalled())
+            {
+                label_modStatus.Text = "INSTALLED";
+                button_installmod.Enabled = true;
+                button_installmod.BackColor = Color.Transparent;
+            }
+            else
+            {
+                label_modStatus.Text = "IDLE";
+                button_installmod.Enabled = true;
+                button_installmod.BackColor = Color.Transparent;
+            }
+            RefreshListViewColors(modInfo, false, true);
+        }
+        private void Label_UpdateStatus(string modName)
+        {
+            Mod modInfo = Keraplz.JSON.Read.Mods.GetModByName(modName);
+            Label_UpdateStatus(modInfo);
+        }
+        private void Label_UpdateInfo(Game Game)
+        {
+            label_baseinfo.Text = "Game: " + Game.GetName() + " " + GameVer + ", StartupTime: " + StartupTime + ", Installed Mods: " + NInstalledMods.ToString("00");
 
             label_filesused.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + "/" + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
             textBox_NFilesModded.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + " | " + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
         }
 
+        private void RefreshListViewColors(Mod modInfo, Boolean isBanned = false, Boolean isSelected = true/*, Color Status, Color Name, Color Type*/)
+        {
+            int n = 0;
+            Color Status, Name, Type;
 
+            while (n < listView_modslist.Items.Count)
+            {
+                Status = Default;
+                Name = Default;
+                Type = Default;
+
+                if (listView_modslist.Items[n].SubItems[1].Text == modInfo.GetName())
+                {
+                    if (modInfo.isInstalled() && isBanned)
+                        ModsManager.Uninstall(modInfo);
+
+                    if (isSelected) Name = Selected;
+                    if (isSelected) Type = Selected;
+
+                    if (modInfo.isLoaded())
+                    {
+                        if (modInfo.isInstalled()) Status = Installed;
+                        else if (modInfo.isBanned()) Status = Banned;
+                    }
+                    else if (modInfo.isBanned()) Status = Banned;
+                    else Status = nonLoaded;
+                }
+                else
+                {
+                    Mod modInfo_ = Keraplz.JSON.Read.Mods.GetModByName(listView_modslist.Items[n].SubItems[1].Text);
+
+                    Name = Default;
+                    Type = Default;
+
+                    if (modInfo_.isLoaded())
+                    {
+                        if (modInfo_.isInstalled()) Status = Installed;
+                        else if (modInfo_.isBanned()) Status = Banned;
+                    }
+                    else if (modInfo_.isBanned()) Status = Banned;
+                    else Status = nonLoaded;
+                }
+                
+                listView_modslist.Items[n].SubItems[0].BackColor = Status;
+                listView_modslist.Items[n].SubItems[0].ForeColor = Status;
+
+                listView_modslist.Items[n].SubItems[1].BackColor = Name;
+
+                listView_modslist.Items[n].SubItems[2].BackColor = Type;
+
+                n = n + 1;
+            }
+        }
         private void TransparentBackground(Control C)
         {
             Boolean IsVisible = false;
@@ -554,8 +599,8 @@ namespace ModsManager
             }
             catch (ArgumentException e)
             {
-                LogFile.WriteLine("Error found in ModsManager.MainWindow.TransparentBackground(Control " + C.Name + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.MainWindow.TransparentBackground(Control " + C.Name + ")");
+                //LogFile.WriteLine(e.Message);
             }
 
             if (IsVisible) C.Visible = true;
@@ -622,7 +667,7 @@ namespace ModsManager
                     myBitmap.MakeTransparent(Color.FromArgb(0));
 
                     // Draw myBitmap to the screen.
-                    e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, myBitmap.Width, myBitmap.Height);
+                    /*e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, myBitmap.Width, myBitmap.Height);*/
                     //e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, image_infobg.Width, image_infobg.Height);
                 }
         }
@@ -657,5 +702,6 @@ namespace ModsManager
         {
             get { return this; }
         }
+
     }
 }

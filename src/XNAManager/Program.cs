@@ -18,33 +18,30 @@ namespace ModsManager
         [STAThread]
         static void Main(string[] args)
         {
+            bool DevPass = false;
+
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
             // ----
 
             LogFile.Initialize(false);
             Profiles.Default = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Games.SpeedRunners);
+            Profiles.CurrentProfile = Profiles.Default;
 
             // ----
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
 
-            Definitions.toLabel_baseinfo_SetupTime = time.ToString(@"ss\:fff");
-            Definitions.toLabel_baseinfo_InstalledMods = Keraplz.JSON.Read.Mods.GetNInstalled();
-            Definitions.toLabel_baseinfo_CurrentBuild = Check.GetCurrentBuild().ToString("000");
-            Definitions.toLabel_baseinfo = string.Format(
-                "Game: {0}, Build: {1}, SetupTime: {2}, Installed Mods: {3}",
-                Profiles.Default.GetGame().GetName(),
-                Definitions.toLabel_baseinfo_CurrentBuild,
-                Definitions.toLabel_baseinfo_SetupTime,
-                Definitions.toLabel_baseinfo_InstalledMods.ToString("00"));
-
             if (args.Length > 0)
             {
                 if (args[0] == "-dev")
                 {
-                    if (args[1] == "updateProcess")
+                    if (args[1] == "devPass")
+                    {
+                        DevPass = true;
+                    }
+                    else if (args[1] == "updateProcess")
                     {
                         LogFile.WriteLine("Refreshing Mods . . .  ");
                         var timeRecord_ = System.Diagnostics.Stopwatch.StartNew();
@@ -57,7 +54,7 @@ namespace ModsManager
                         {
                             // Uninstall all installed mods
                             foreach (Mod modInfo in modsInstalled)
-                                ModsManager.uninstallMod(modInfo);
+                                ModsManager.Uninstall(modInfo);
                         }
 
                         // Clear mods/*.json files
@@ -79,7 +76,7 @@ namespace ModsManager
 
                             // Reinstall all previously installed mods
                             foreach (Mod modInfo in modsInstalled)
-                                ModsManager.installMod(modInfo);
+                                ModsManager.Install(modInfo);
                         }
 
                         // Refresh Profile
@@ -96,7 +93,7 @@ namespace ModsManager
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow(Profiles.Default));
+            Application.Run(new MainWindow(time.ToString(@"ss\:fff"), DevPass));
         }
     }
 }

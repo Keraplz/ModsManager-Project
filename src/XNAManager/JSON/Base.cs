@@ -26,10 +26,13 @@ namespace Keraplz.JSON
         public class Mods
         {
             [JsonProperty("name")]
-            public String Name;
+            public String Name { get; set; }
 
             [JsonProperty("isInstalled")]
-            public Boolean isInstalled;
+            public Boolean isInstalled { get; set; }
+
+            [JsonProperty("preventLoad")]
+            public Boolean preventLoad { get; set; }
 
             [JsonProperty("type")]
             public IList<String> Type { get; set; }

@@ -13,6 +13,7 @@ namespace ModsManager
         public static Profile Blank = new Profile();
         public static Profile Default;// = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Keraplz.JSON.Read.Configuration.GetGame(), Keraplz.JSON.Read.Configuration.GetUIGraphics());
         //public static Profile Default = new Profile("ModsManager", Games.SpeedRunners, false);
+        public static Profile CurrentProfile;
     }
     public class Profile
     {
@@ -67,10 +68,10 @@ namespace ModsManager
             foreach (string modPath in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
             {
                 string modName = Path.GetFileNameWithoutExtension(modPath);
-                Mod mod_info = Read.Mods.GetModByName(modName, m_Game.GetFolderMods());
-                m_Mods.Add(mod_info);
+                Mod modInfo = Read.Mods.GetModByName(modName, m_Game.GetFolderMods());
+                if (modInfo.ShouldLoad()) m_Mods.Add(modInfo);
 
-                //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + mod_info.GetName());
+                //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + modInfo.GetName());
             }
 
             m_WindowName = m_Game.GetName() + " " + m_ProgramName;
@@ -82,7 +83,7 @@ namespace ModsManager
                 if (m_Mods.Count > 0)
                 {
                     IList<Mod> toAdd = new List<Mod>();
-                    foreach (Mod mod_info in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game))
+                    foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game))
                     {
                         Boolean shouldAdd = false;
 
@@ -90,32 +91,39 @@ namespace ModsManager
                         {
                             for (int n = 0; n < m_Mods.Count; n++)
                             {
-                                if (!m_Mods[n].Contains(mod_info.GetName())) shouldAdd = true;
+                                if (!m_Mods[n].Contains(modInfo.GetName())) shouldAdd = true;
                                 else shouldAdd = false;
 
-                                if (shouldAdd || m_Mods[n].GetName() == mod_info.GetName()) break;
+                                if (shouldAdd || m_Mods[n].GetName() == modInfo.GetName()) break;
                             }
 
-                            if (shouldAdd) toAdd.Add(mod_info);
+                            if (shouldAdd && modInfo.ShouldLoad()) toAdd.Add(modInfo);
                             shouldAdd = false;
                         }
                     }
 
                     toAdd = toAdd.Distinct().ToList();
-                    foreach (Mod mod_info in toAdd)
+                    foreach (Mod modInfo in toAdd)
                     {
-                        m_Mods.Add(mod_info);
+                        m_Mods.Add(modInfo);
 
                         //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + mod_info.GetName());
                     }
                 }
-                else m_Mods = Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles);
+                else
+                {
+                    foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles))
+                    {
+                        if (!m_Mods.Contains(modInfo) && modInfo.ShouldLoad())
+                            m_Mods.Add(modInfo);
+                    }
+                }
 
             //IEnumerable<String> subfolders = Directory.EnumerateDirectories(m_Game.GetFolderMods());
             //if (!Directory.Exists(m_Game.GetFolderMods()) || subfolders.ToList().Count < 1) m_BannedMods = new List<Mod>();
             //else m_BannedMods = Check.GetBannedMods(m_Game);
 
-            Profiles.Blank.RefreshBannedMods();
+            Profiles.Blank.RefreshBannedMods(m_Game);
             m_BannedMods = Profiles.Blank.GetBannedMods();
 
             timeRecord.Stop();
@@ -183,37 +191,66 @@ namespace ModsManager
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
             m_Mods.Clear();
-            foreach (string modName in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
-                m_Mods.Add(Read.Mods.GetModByName(modName, m_Game.GetFolderMods()));
+            m_BannedMods.Clear();
 
             m_WindowName = m_Game.GetName() + " " + m_ProgramName;
-            Profiles.Blank.RefreshBannedMods();
-            m_BannedMods = Profiles.Blank.GetBannedMods();
+            RefreshBannedMods(m_Game);
+
+            foreach (string modPath in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
+            {
+                string modName = Path.GetFileNameWithoutExtension(modPath);
+                Mod modInfo = Read.Mods.GetModByName(modName, m_Game.GetFolderMods());
+                Boolean IsBanned = false;
+
+                if(modInfo.isBanned()) IsBanned = true;
+
+                if (modInfo.ShouldLoad(IsBanned))
+                    m_Mods.Add(modInfo);
+                else m_Mods.Add(new Mod(modInfo.GetName(), Read.Mods.IsInstalled(modName, m_Game.GetFolderMods()), null, null));
+            }
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
             LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
         }
-        public Boolean IsBanned(Mod mod_info) {
-            if (m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) return true;
+        public Boolean isLoaded(Mod modInfo)
+        {
+            return modInfo.ShouldLoad(/*isBanned(modInfo)*/);
+        }
+        public Boolean isBanned(Mod modInfo) {
+            if (m_BannedMods.Any(x => x.GetName() == modInfo.GetName())) return true;
             else return false;
         }
-        public void BanMod(Mod mod_info) {
-            if (!m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) m_BannedMods.Add(mod_info);
+        public void BanMod(Mod modInfo) {
+            if (!m_BannedMods.Any(x => x.GetName() == modInfo.GetName())) m_BannedMods.Add(modInfo);
         }
-        public void UnBanMod(Mod mod_info) {
-            if (m_BannedMods.Any(x => x.GetName() == mod_info.GetName())) m_BannedMods.Remove(mod_info);
+        public void UnBanMod(Mod modInfo) {
+            if (m_BannedMods.Any(x => x.GetName() == modInfo.GetName())) m_BannedMods.Remove(modInfo);
         }
 
-        public void RefreshBannedMods() {
+        public void RefreshBannedMods()
+        {
             Profiles.Blank.m_BannedMods.Clear();
             m_BannedMods.Clear();
-            foreach (IList<Mod> modList in ModsManager.GetBannedMods(m_Game))
+            foreach (IList<Mod> modList in ModsManager.GetBannedMods(m_Game/*, m_Mods*/))
                 if (modList.Count() > 1)
                     foreach (Mod modInstalled in Read.Mods.GetInstalled(m_Game.GetFolderMods()))
-                        if (modList.Any(x => x.GetName() == modInstalled.GetName()))
+                        if (modList.Any(x => x.GetName() == modInstalled.GetName()) && modInstalled.ShouldLoad())
                             foreach (Mod modInfo in modList)
-                                if (modInfo.GetName() != modInstalled.GetName())
+                                if (modInfo.GetName() != modInstalled.GetName() && modInfo.ShouldLoad())
+                                    if (!m_BannedMods.Any(x => x.GetName() == modInfo.GetName()) || m_BannedMods.Count == 0)
+                                        Profiles.Blank.m_BannedMods.Add(modInfo);
+            m_BannedMods = Profiles.Blank.GetBannedMods();
+        }
+        public void RefreshBannedMods(Game Game) {
+            Profiles.Blank.m_BannedMods.Clear();
+            m_BannedMods.Clear();
+            foreach (IList<Mod> modList in ModsManager.GetBannedMods(Game/*, m_Mods*/))
+                if (modList.Count() > 1)
+                    foreach (Mod modInstalled in Read.Mods.GetInstalled(m_Game.GetFolderMods()))
+                        if (modList.Any(x => x.GetName() == modInstalled.GetName())/* && modInstalled.ShouldLoad()*/)
+                            foreach (Mod modInfo in modList)
+                                if (modInfo.GetName() != modInstalled.GetName() && !modInfo.ShouldLoad(true))
                                     if (!m_BannedMods.Any(x => x.GetName() == modInfo.GetName()) || m_BannedMods.Count == 0)
                                         Profiles.Blank.m_BannedMods.Add(modInfo);
             m_BannedMods = Profiles.Blank.GetBannedMods();
@@ -229,5 +266,23 @@ namespace ModsManager
             else return false;
         }
 
+
+        public bool Load(Mod modInfo)
+        {
+            bool result;
+            if (modInfo.isLoaded()) return true;
+            else result = Keraplz.JSON.Write.ModDefinion.Edit.Load(modInfo, true);
+            Refresh();
+            return result;
+        }
+
+        public bool Unload(Mod modInfo)
+        {
+            bool result;
+            if (!modInfo.isLoaded()) return true;
+            else result = Keraplz.JSON.Write.ModDefinion.Edit.Load(modInfo, false);
+            Refresh();
+            return result;
+        }
     }
 }

@@ -56,8 +56,8 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteLine("Error found in ModsManager.Search.SearchXNB(String " + sDir + ", Boolean " + shouldWrite.ToString() + ")");
-                LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e); // ModsManager.Search.SearchXNB(String " + sDir + ", Boolean " + shouldWrite.ToString() + ")");
+                //LogFile.WriteLine(e.Message);
             }
 
             return FilesList;

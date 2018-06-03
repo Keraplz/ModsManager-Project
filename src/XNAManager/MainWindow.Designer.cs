@@ -57,6 +57,7 @@
             this.textBox_contentFolder = new System.Windows.Forms.TextBox();
             this.textBox_modsFolder = new System.Windows.Forms.TextBox();
             this.textBox_gameName = new System.Windows.Forms.TextBox();
+            this.label_modSize = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_preview)).BeginInit();
@@ -75,6 +76,7 @@
             // 
             // tabMain
             // 
+            this.tabMain.Controls.Add(this.label_modSize);
             this.tabMain.Controls.Add(this.button_unload);
             this.tabMain.Controls.Add(this.button_installmod);
             this.tabMain.Controls.Add(this.button_modsfolder);
@@ -162,7 +164,7 @@
             this.label_modStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_modStatus.ForeColor = System.Drawing.Color.Gray;
             this.label_modStatus.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label_modStatus.Location = new System.Drawing.Point(94, 293);
+            this.label_modStatus.Location = new System.Drawing.Point(91, 293);
             this.label_modStatus.Name = "label_modStatus";
             this.label_modStatus.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.label_modStatus.Size = new System.Drawing.Size(36, 17);
@@ -365,6 +367,19 @@
             this.textBox_gameName.Size = new System.Drawing.Size(146, 20);
             this.textBox_gameName.TabIndex = 0;
             // 
+            // label_modSize
+            // 
+            this.label_modSize.AutoSize = true;
+            this.label_modSize.BackColor = System.Drawing.SystemColors.Control;
+            this.label_modSize.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_modSize.ForeColor = System.Drawing.Color.Gray;
+            this.label_modSize.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label_modSize.Location = new System.Drawing.Point(91, 310);
+            this.label_modSize.Name = "label_modSize";
+            this.label_modSize.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label_modSize.Size = new System.Drawing.Size(0, 17);
+            this.label_modSize.TabIndex = 23;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -418,5 +433,6 @@
         private System.Windows.Forms.Label label_info_gameName;
         private System.Windows.Forms.Button button_unload;
         private System.Windows.Forms.Button button_hardreset;
+        private System.Windows.Forms.Label label_modSize;
     }
 }

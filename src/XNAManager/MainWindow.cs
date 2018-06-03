@@ -27,6 +27,8 @@ namespace ModsManager
         Color nonLoaded = Color.Yellow;
         Color Selected = SystemColors.Highlight;
 
+        private Game CurrentGame = Games.SpeedRunners;
+
         private string GameVer = string.Empty;
         private string StartupTime = string.Empty;
         private int NInstalledMods = 0;
@@ -46,13 +48,28 @@ namespace ModsManager
             }
             catch { }
 
+            InitializeComponent();
+            LogFile.WriteInfo(this, CurrentGame, m_Dev);
+
+            var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+
+            // ----
+
+            Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), CurrentGame);
+            //Profiles.CurrentProfile = Profiles.Default;
+
+            // ----
+
+            timeRecord.Stop();
+            TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+
+            uptime = time.ToString(@"ss\:fff");
             BannedMods = Profiles.Default.GetBannedMods();
             Dev = m_Dev;
 
             //Profiles.Default = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Games.SpeedRunners, Keraplz.JSON.Read.Configuration.GetUIGraphics());
 
             //Startup StartupWindow_ = new Startup();
-            InitializeComponent();
             this.Text = Profiles.Default.GetWindowName() + " [" + this.ApplicationAssembly.GetName().Version.ToString() + "]";
             updater = new AutoUpdate(this);
 
@@ -125,6 +142,8 @@ namespace ModsManager
 
             if (Dev) button_unload.Visible = true;
             if (Dev) button_hardreset.Visible = true;
+
+            button_refresh.Visible = false;
 
             updater.DoUpdate();
         }
@@ -454,13 +473,15 @@ namespace ModsManager
 
                             if (!shouldbreak)
                             {
-                                label_title.Location = new System.Drawing.Point(9, 261);
-                                label_modStatus.Location = new System.Drawing.Point(9, 293);
+                                label_title.Location = new System.Drawing.Point(9, label_title.Location.Y);
+                                label_modStatus.Location = new System.Drawing.Point(9, label_modStatus.Location.Y);
+                                label_modSize.Location = new System.Drawing.Point(9, label_modSize.Location.Y);
                             }
                             else
                             {
-                                label_title.Location = new System.Drawing.Point(91, 261);
-                                label_modStatus.Location = new System.Drawing.Point(94, 293);
+                                label_title.Location = new System.Drawing.Point(91, label_title.Location.Y);
+                                label_modStatus.Location = new System.Drawing.Point(91, label_modStatus.Location.Y);
+                                label_modSize.Location = new System.Drawing.Point(91, label_modSize.Location.Y);
                             }
 
                             //if (shouldbreak)
@@ -469,6 +490,9 @@ namespace ModsManager
                         //else this.image_infobg.Image = null;
 
                         #endregion
+
+                        label_modSize.Visible = true;
+                        label_modSize.Text = modInfo.GetSize();
 
                         Label_UpdateStatus(modInfo);
                         RefreshListViewColors(modInfo, IsBanned, IsSelected);

@@ -13,39 +13,40 @@ namespace ModsManager
         {
             Maintenance_(Profiles.Default.GetProgramName(), Profiles.Default.GetGame(), Profiles.Default.GetMaintenancePaths(), Profiles.Default.GetMaintenanceFiles());
             Search.SearchXNB(Profiles.Default.GetGame().GetFolderContent(), true);
-            WriteJSON_(true);
+            //WriteJSON_(true);
         }
 
         public static IList<Mod> Maintenance_(String ProgramName, Game Game, String[] PathArray, String[] FileArray)
         {
             Maintenance.CreatePaths(ProgramName, Game, PathArray);
-            Maintenance.ResetLogs(ProgramName, FileArray);
+            //Maintenance.ResetLogs(ProgramName, FileArray);
             return Maintenance.WriteModDefinitions(Game);
         }
         public static void Maintenance_(String ProgramName, Game Game, String[] PathArray, String[] FileArray, Boolean shouldWMD = false, Boolean shouldRL = false)
         {
             Maintenance.CreatePaths(ProgramName, Game, PathArray);
-            if (shouldRL) Maintenance.ResetLogs(ProgramName, FileArray);
+            //if (shouldRL) Maintenance.ResetLogs(ProgramName, FileArray);
             if (shouldWMD) Maintenance.WriteModDefinitions(Game);
         }
         public static void Maintenance_(String ProgramName, Game Game, String[] PathArray, String[] FileArray, Boolean shouldWMD = true)
         {
             Maintenance.CreatePaths(ProgramName, Game, PathArray);
-            Maintenance.ResetLogs(ProgramName, FileArray);
+            //Maintenance.ResetLogs(ProgramName, FileArray);
             if (shouldWMD) Maintenance.WriteModDefinitions(Game);
         }
         public static void Maintenance_(Profile profile, Boolean CreatePaths, String[] PathArray, String[] FileArray, Boolean ResetLogs, Boolean WriteModDefinitions)
         {
             Maintenance.CreatePaths(profile, PathArray, CreatePaths);
-            Maintenance.ResetLogs(profile, FileArray, ResetLogs);
+            //Maintenance.ResetLogs(profile, FileArray, ResetLogs);
             Maintenance.WriteModDefinitions(profile, WriteModDefinitions);
         }
         public static void Maintenance_(String[] PathArray, String[] FileArray, Boolean CreatePaths, Boolean ResetLogs, Boolean WriteModDefinitions)
         {
             Maintenance.CreatePaths(PathArray, CreatePaths);
-            Maintenance.ResetLogs(FileArray, ResetLogs);
+            //Maintenance.ResetLogs(FileArray, ResetLogs);
             Maintenance.WriteModDefinitions(WriteModDefinitions);
         }
+        /*
         public static void WriteJSON_(Boolean config)
         {
             try
@@ -61,13 +62,10 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                
-                {
-                    LogFile.WriteError(e); // ModsManager.Setup.WriteJSON_(" + config.ToString() + ")");
-                    //LogFile.WriteLine(e.Message);
-                }
+                LogFile.WriteError(e);
             }
         }
+        */
         public static void ReadJSON_(String path)
         {
             Keraplz.JSON.Read.ReadJSON(path);
@@ -332,6 +330,7 @@ namespace ModsManager
                 //LogFile.WriteLine(e.Message);
             }
         }
+        /*
         public static void ResetLogs(String ProgramName, String[] FileArray)
         {
             foreach (string file in FileArray)
@@ -370,6 +369,7 @@ namespace ModsManager
                 }
             }
         }
+        */
         public static void CreatePaths(String ProgramName, Game Game, String[] PathArray)
         {
             foreach (string path in PathArray)

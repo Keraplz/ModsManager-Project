@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-
-// TODO: 
-//       rewrite toLabel member from Definitions.cs directly on the MainWindow if possible
-
 namespace ModsManager
 {
     static class Program
@@ -19,22 +15,23 @@ namespace ModsManager
         static void Main(string[] args)
         {
             bool DevPass = false;
-
+            /*
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
             // ----
-
-            LogFile.Initialize(false);
-            Profiles.Default = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Games.SpeedRunners);
-            Profiles.CurrentProfile = Profiles.Default;
+            */
+            LogFile.Initialize(false);/*
+            Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), Games.SpeedRunners);
+            //Profiles.CurrentProfile = Profiles.Default;
 
             // ----
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-
+            */
             if (args.Length > 0)
             {
+                Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), Games.SpeedRunners);
                 if (args[0] == "-dev")
                 {
                     if (args[1] == "devPass")
@@ -93,7 +90,7 @@ namespace ModsManager
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow(time.ToString(@"ss\:fff"), DevPass));
+            Application.Run(new MainWindow(0.ToString()/*time.ToString(@"ss\:fff")*/, DevPass));
         }
     }
 }

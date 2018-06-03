@@ -13,7 +13,7 @@ namespace ModsManager
         public static Profile Blank = new Profile();
         public static Profile Default;// = new Profile(Keraplz.JSON.Read.Configuration.GetProgramName(), Keraplz.JSON.Read.Configuration.GetGame(), Keraplz.JSON.Read.Configuration.GetUIGraphics());
         //public static Profile Default = new Profile("ModsManager", Games.SpeedRunners, false);
-        public static Profile CurrentProfile;
+        //public static Profile CurrentProfile;
     }
     public class Profile
     {
@@ -37,8 +37,8 @@ namespace ModsManager
             m_Mods = new List<Mod>();
             m_BannedMods = new List<Mod>();
             m_PreviewExt = new String[] { ".jpg", ".jpeg", ".png" };
-            m_MaintenancePaths = new String[] { "_backup", "_content", "_logs" };
-            m_MaintenanceFiles = new String[] { "install.txt", "uninstall.txt", "search.txt" };
+            m_MaintenancePaths = new String[] { "_backup", "_content" };
+            m_MaintenanceFiles = new String[] {  };
             m_XmlUrl = "https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/update.xml";
         }
 
@@ -49,86 +49,99 @@ namespace ModsManager
 
             m_Mods = new List<Mod>();
 
-            if (input_programName != null) m_ProgramName = input_programName;
-            else m_ProgramName = Profiles.Blank.GetProgramName();
-
-            //if (LogFile.isActive) LogFile.AddMessage("Program Name :: " + m_ProgramName);
-
-            if (input_game != null) m_Game = input_game;
-            else m_Game = Profiles.Blank.GetGame();
-
-            //if (LogFile.isActive) LogFile.AddMessage("Game Name :: " + m_Game.GetName());
-
-            m_PreviewExt = Profiles.Blank.GetPreviewExt();
-            m_MaintenancePaths = Profiles.Blank.GetMaintenancePaths();
-            m_MaintenanceFiles = Profiles.Blank.GetMaintenanceFiles();
-
-            Setup.Maintenance_(input_programName, input_game, m_MaintenancePaths, m_MaintenanceFiles, true, true);
-
-            foreach (string modPath in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
+            try
             {
-                string modName = Path.GetFileNameWithoutExtension(modPath);
-                Mod modInfo = Read.Mods.GetModByName(modName, m_Game.GetFolderMods());
-                if (modInfo.ShouldLoad()) m_Mods.Add(modInfo);
 
-                //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + modInfo.GetName());
-            }
+                if (input_programName != null) m_ProgramName = input_programName;
+                else m_ProgramName = Profiles.Blank.GetProgramName();
 
-            m_WindowName = m_Game.GetName() + " " + m_ProgramName;
-            m_XmlUrl = Profiles.Blank.GetXmlUrl();
+                //if (LogFile.isActive) LogFile.AddMessage("Program Name :: " + m_ProgramName);
 
-            //if (LogFile.isActive) LogFile.AddMessage("AutoUpdater Uri :: " + m_XmlUrl);
+                if (input_game != null) m_Game = input_game;
+                else m_Game = Profiles.Blank.GetGame();
 
-            if (m_Mods.Count == 0 || m_Mods.Count != Directory.GetFiles(input_game.GetFolderMods(), "*.json").Count())
-                if (m_Mods.Count > 0)
+                //if (LogFile.isActive) LogFile.AddMessage("Game Name :: " + m_Game.GetName());
+
+                m_PreviewExt = Profiles.Blank.GetPreviewExt();
+                m_MaintenancePaths = Profiles.Blank.GetMaintenancePaths();
+                m_MaintenanceFiles = Profiles.Blank.GetMaintenanceFiles();
+
+                Setup.Maintenance_(input_programName, input_game, m_MaintenancePaths, m_MaintenanceFiles, true, true);
+
+                foreach (string modPath in Directory.GetFiles(m_Game.GetFolderMods(), "*.json"))
                 {
-                    IList<Mod> toAdd = new List<Mod>();
-                    foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game))
+                    string modName = Path.GetFileNameWithoutExtension(modPath);
+                    Mod modInfo = Read.Mods.GetModByName(modName, m_Game.GetFolderMods());
+                    if (modInfo.ShouldLoad()) m_Mods.Add(modInfo);
+
+                    //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + modInfo.GetName());
+                }
+
+                m_WindowName = m_Game.GetName() + " " + m_ProgramName;
+                m_XmlUrl = Profiles.Blank.GetXmlUrl();
+
+                //if (LogFile.isActive) LogFile.AddMessage("AutoUpdater Uri :: " + m_XmlUrl);
+
+                if (m_Mods.Count == 0 || m_Mods.Count != Directory.GetFiles(input_game.GetFolderMods(), "*.json").Count())
+                    if (m_Mods.Count > 0)
                     {
-                        Boolean shouldAdd = false;
-
-                        foreach (Mod mod in m_Mods)
+                        IList<Mod> toAdd = new List<Mod>();
+                        //foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game))
+                        foreach (Mod modInfo in Setup.Maintenance_(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles))
                         {
-                            for (int n = 0; n < m_Mods.Count; n++)
+                            Boolean shouldAdd = false;
+
+                            foreach (Mod mod in m_Mods)
                             {
-                                if (!m_Mods[n].Contains(modInfo.GetName())) shouldAdd = true;
-                                else shouldAdd = false;
+                                for (int n = 0; n < m_Mods.Count; n++)
+                                {
+                                    if (!m_Mods[n].Contains(modInfo.GetName())) shouldAdd = true;
+                                    else shouldAdd = false;
 
-                                if (shouldAdd || m_Mods[n].GetName() == modInfo.GetName()) break;
+                                    if (shouldAdd || m_Mods[n].GetName() == modInfo.GetName()) break;
+                                }
+
+                                if (shouldAdd && modInfo.ShouldLoad()) toAdd.Add(modInfo);
+                                shouldAdd = false;
                             }
+                        }
 
-                            if (shouldAdd && modInfo.ShouldLoad()) toAdd.Add(modInfo);
-                            shouldAdd = false;
+                        toAdd = toAdd.Distinct().ToList();
+                        foreach (Mod modInfo in toAdd)
+                        {
+                            m_Mods.Add(modInfo);
+
+                            //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + mod_info.GetName());
+                        }
+                    }
+                    else
+                    {
+                        //foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles))
+                        foreach (Mod modInfo in Setup.Maintenance_(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles))
+                        {
+                            if (!m_Mods.Contains(modInfo) && modInfo.ShouldLoad())
+                                m_Mods.Add(modInfo);
                         }
                     }
 
-                    toAdd = toAdd.Distinct().ToList();
-                    foreach (Mod modInfo in toAdd)
-                    {
-                        m_Mods.Add(modInfo);
+                //IEnumerable<String> subfolders = Directory.EnumerateDirectories(m_Game.GetFolderMods());
+                //if (!Directory.Exists(m_Game.GetFolderMods()) || subfolders.ToList().Count < 1) m_BannedMods = new List<Mod>();
+                //else m_BannedMods = Check.GetBannedMods(m_Game);
 
-                        //if (LogFile.isActive) LogFile.AddMessage("Mod Added :: " + mod_info.GetName());
-                    }
-                }
-                else
-                {
-                    foreach (Mod modInfo in Keraplz.JSON.Write.Configuration(m_ProgramName, m_Game, m_MaintenancePaths, m_MaintenanceFiles))
-                    {
-                        if (!m_Mods.Contains(modInfo) && modInfo.ShouldLoad())
-                            m_Mods.Add(modInfo);
-                    }
-                }
+                Profiles.Blank.RefreshBannedMods(m_Game);
+                m_BannedMods = Profiles.Blank.GetBannedMods();
 
-            //IEnumerable<String> subfolders = Directory.EnumerateDirectories(m_Game.GetFolderMods());
-            //if (!Directory.Exists(m_Game.GetFolderMods()) || subfolders.ToList().Count < 1) m_BannedMods = new List<Mod>();
-            //else m_BannedMods = Check.GetBannedMods(m_Game);
-
-            Profiles.Blank.RefreshBannedMods(m_Game);
-            m_BannedMods = Profiles.Blank.GetBannedMods();
+                //throw new Exception();
+            }
+            catch (Exception e)
+            {
+                LogFile.WriteError(e);
+                Environment.Exit(0);
+            }
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
         }
 
         // ----------------
@@ -211,7 +224,7 @@ namespace ModsManager
 
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
         }
         public Boolean isLoaded(Mod modInfo)
         {

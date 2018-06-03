@@ -74,9 +74,9 @@ namespace ModsManager
                 string sPath = bPath + modInfo.GetName() + "/";
 
                 if (Directory.Exists(sPath) && Directory.Exists(cPath))
-                {
+                {/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+                        sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");*/
                     LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
                     var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -107,9 +107,9 @@ namespace ModsManager
 
                     timeRecord.Stop();
                     TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
                 }
 
                 string toDupe = Path.GetDirectoryName(Path.GetDirectoryName(sPath));
@@ -147,9 +147,9 @@ namespace ModsManager
                 }
 
                 if (!IsRepeated(Pass_modFiles))
-                {
+                {/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+                        sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");*/    
                     LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
                     var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -182,9 +182,9 @@ namespace ModsManager
 
                     timeRecord.Stop();
                     TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
                 }
             }
             catch (Exception e)
@@ -204,9 +204,9 @@ namespace ModsManager
             try
             {
                 if (!modInfo.isInstalled()) { return false; }
-
+                /*
                 using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                    sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+                    sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");*/
                 LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
                 var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -240,9 +240,9 @@ namespace ModsManager
                 {
                     timeRecord.Stop();
                     TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"), true);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));*/
 
                     return false;
                 }
@@ -252,9 +252,9 @@ namespace ModsManager
 
                 timeRecord.Stop();
                 TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
                 using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
 
                 return IsSuccess;
             }
@@ -283,9 +283,9 @@ namespace ModsManager
             try
             {
                 if (modInfo.isInstalled()) { return false; }
-
+                /*
                 using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                    sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+                    sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");*/
                 LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
                 var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -309,9 +309,9 @@ namespace ModsManager
                 {
                     timeRecord.Stop();
                     TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"), true);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));/*
                     using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));*/
 
                     return false;
                 }
@@ -321,9 +321,9 @@ namespace ModsManager
 
                 timeRecord.Stop();
                 TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"), true);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
                 using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));
+                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
 
                 return IsSuccess;
             }

@@ -96,6 +96,7 @@
       <DependentUpon>Startup.cs</DependentUpon>
     </Compile>
     <Compile Include="JSON\Write.cs" />
+    <Compile Include="OSystem.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
       <SubType>Designer</SubType>

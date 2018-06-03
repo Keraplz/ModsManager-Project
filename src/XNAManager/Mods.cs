@@ -19,6 +19,9 @@ namespace ModsManager
 
         [Newtonsoft.Json.JsonProperty("content")]
         private IList<String> m_Content = new List<String>();
+
+        private string m_Size;
+        private long m_PureSize;
         //private IList<File> m_Content = new List<File>();
 
 
@@ -31,6 +34,17 @@ namespace ModsManager
             m_isInstalled = isInstalled;
             m_Types = Types;
             m_Content = Content;
+
+            foreach (string Ext in Games.SpeedRunners.GetExtensions())
+            {
+                foreach (string file in Directory.GetFiles(Path.Combine(Games.SpeedRunners.GetFolderMods(), m_Name), "*" + Ext, SearchOption.AllDirectories))
+                {
+                    FileInfo info = new FileInfo(file);
+                    m_PureSize += info.Length;
+                }
+            }
+
+            m_Size = SizeSuffix(m_PureSize, 3);
         }
 
         // Getters
@@ -86,6 +100,8 @@ namespace ModsManager
 
             return m_Content;
         }
+        public string GetSize() { return m_Size; }
+        public long GetPureSize() { return m_PureSize; }
 
         // ----------------
 
@@ -93,7 +109,7 @@ namespace ModsManager
         {
             bool denied = false;
 
-            int i = 0;
+            //int i = 0;
             string oriType = string.Empty;
             IList<String> newTypes = new List<String>();
 
@@ -184,6 +200,22 @@ namespace ModsManager
             public string GetExtension() { return m_Extension; }
         }
 
+        private static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+        private static string SizeSuffix(Int64 value, int decimalPlaces = 1)
+        {
+            if (value < 0) { return "-" + SizeSuffix(-value); }
+
+            int i = 0;
+            decimal dValue = (decimal)value;
+            while (Math.Round(dValue, decimalPlaces) >= 1000)
+            {
+                dValue /= 1024;
+                i++;
+            }
+
+            return string.Format("{0:n" + decimalPlaces + "} {1}", dValue, SizeSuffixes[i]);
+        }
 
     }
 }

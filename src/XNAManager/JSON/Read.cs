@@ -74,6 +74,8 @@ namespace Keraplz.JSON
                 return Types;
             }
         }
+        
+        /*
         public class Configuration
         {
             public static String GetProgramName()
@@ -81,7 +83,7 @@ namespace Keraplz.JSON
                 if (File.Exists(Profile.GetProgramName() + "/Configuration.json"))
                 {
                     Base.Configuration config_info_ = JsonConvert.DeserializeObject<Base.Configuration>(File.ReadAllText(Profile.GetProgramName() + "/Configuration.json"));
-
+        
                     if (config_info_.ProgramName != null) return config_info_.ProgramName;
                     else return Profiles.Blank.GetProgramName();
                 }
@@ -92,13 +94,15 @@ namespace Keraplz.JSON
                 if (File.Exists(Profile.GetProgramName() + "/Configuration.json"))
                 {
                     Base.Configuration config_info_ = JsonConvert.DeserializeObject<Base.Configuration>(File.ReadAllText(Profile.GetProgramName() + "/Configuration.json"));
-
+        
                     if (config_info_.Game != null) return config_info_.Game;
                     else return Profiles.Blank.GetGame();
                 }
                 else return Profiles.Blank.GetGame();
             }
         }
+        */
+
         public class Mods
         {
             public static Boolean Exists(String input_modname, String modsFolder)

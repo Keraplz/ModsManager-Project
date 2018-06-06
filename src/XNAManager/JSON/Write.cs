@@ -262,6 +262,7 @@ namespace Keraplz.JSON
             }
         }
 
+        /*
         public static IList<Mod> Configuration(String ProgramName, Game Game, String[] MaintenancePaths, String[] MaintenanceFiles)
         {
             IList<Mod> Mods = new List<Mod>();
@@ -466,7 +467,7 @@ namespace Keraplz.JSON
                 //LogFile.WriteLine(e.Message);
             }
         }
-        
+        */
 
         private static void setPath(string path)
         {

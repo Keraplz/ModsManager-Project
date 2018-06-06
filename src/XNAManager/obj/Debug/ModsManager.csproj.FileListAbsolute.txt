@@ -28,3 +28,5 @@ C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\o
 C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\bin\Debug\ModsManager.exe
 C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\bin\Debug\ModsManager.pdb
 C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\obj\Debug\ModsManager.csprojResolveAssemblyReference.cache
+C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\obj\Debug\ModsManager.BetaMMUI.resources
+C:\Users\Katt_\Documents\Visual Studio 2013\Projects\XNAManagerV1.5\XNAManager\obj\Debug\ModsManager.MMUIBugReport.resources

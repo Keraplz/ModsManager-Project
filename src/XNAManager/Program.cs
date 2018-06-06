@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ModsManager
@@ -88,9 +89,26 @@ namespace ModsManager
                 }
             }
 
+            Extract("ModsManager", "Resources", "Logo_100x50.png");//, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ExtractTest"));
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow(0.ToString()/*time.ToString(@"ss\:fff")*/, DevPass));
+            //Application.Run(new MainWindow(0.ToString()/*time.ToString(@"ss\:fff")*/, DevPass));
+            Application.Run(new BetaMMUI());
+        }
+
+        private static void Extract(string NameSpace, string InternalPath, string ResourceName, string outDir = "")
+        {
+            Assembly _Assembly = Assembly.GetCallingAssembly();
+
+            if (!Directory.Exists(outDir) && outDir != "")
+                Directory.CreateDirectory(outDir);
+
+            using (Stream s = _Assembly.GetManifestResourceStream(NameSpace + "." + (InternalPath == "" ? "" : InternalPath + ".") + ResourceName))
+            using (BinaryReader br = new BinaryReader(s))
+            using (FileStream fs = new FileStream(Path.Combine(outDir, ResourceName), FileMode.OpenOrCreate))
+            using (BinaryWriter bw = new BinaryWriter(fs))
+                bw.Write(br.ReadBytes((int)s.Length));
         }
     }
 }

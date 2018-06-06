@@ -49,7 +49,10 @@ namespace ModsManager
             catch { }
 
             InitializeComponent();
-            LogFile.WriteInfo(this, CurrentGame, m_Dev);
+
+            string Mode = string.Empty;
+            if (m_Dev) Mode = "[Beta]";
+            LogFile.WriteInfo(CurrentGame, Mode);
 
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -623,8 +626,7 @@ namespace ModsManager
             }
             catch (ArgumentException e)
             {
-                LogFile.WriteError(e); // ModsManager.MainWindow.TransparentBackground(Control " + C.Name + ")");
-                //LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e);
             }
 
             if (IsVisible) C.Visible = true;

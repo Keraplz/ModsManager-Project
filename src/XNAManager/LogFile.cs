@@ -100,15 +100,16 @@ namespace ModsManager
             WriteLine(e.Message);
         }
 
-        public static void WriteInfo(MainWindow WindowInfo, Game GameInfo, Boolean DevMode)
+        public static void WriteInfo(Game GameInfo, String Mode = "")
         {
             if (logWriter == null) return;
-            string Mode = string.Empty;
+
+            Assembly _Assembly = Assembly.GetCallingAssembly();
 
             bool oldTimeStamp = useTimeStamp;
             useTimeStamp = false;
 
-            if (DevMode) Mode = "[Dev Mode] ";
+            //Mode = "[Dev Mode] ";
 
             OSystem OSInfo = new OSystem();
             string GInfo = string.Empty;
@@ -117,8 +118,8 @@ namespace ModsManager
             else GInfo = GameInfo.GetName();
 
             WriteLine("    " + Mode + "Program Info:");
-            WriteLine("        " + WindowInfo.ApplicationAssembly.GetName().Name);
-            WriteLine("        Version: " + WindowInfo.ApplicationAssembly.GetName().Version.ToString());
+            WriteLine("        " + _Assembly.GetName().Name);
+            WriteLine("        Version: " + _Assembly.GetName().Version.ToString());
             WriteLine("        Game: " + GInfo);
             WriteLine("        OS: " + OSInfo.GetOSInfo());
             //WriteLine("        Resources Library: ");

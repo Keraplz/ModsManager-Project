@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<update appId="SRModManager">
+	<version>1.9.0.2</version>
+	<url>https://raw.githubusercontent.com/Keraplz/ModsManager-Project/master/ModsManager.exe</url>
+	<fileName>ModsManager.exe</fileName>
+	<md5>8d913e04bd3f7c43ad1e193bc0006c58</md5>
+	<description>
+16/04/2018 - Better Log System, Error fixes and Optimization
+12/05/2018 - Fixed major bugs, thanks ?! ;)
+02/06/2018 - Log System upgrades and minor bug fixes (now must be easier to report bugs)
+	</description>
+	<launchArgs>-dev updateProcess</launchArgs>
+</update>
+<mods game="SpeedRunners">
+	<mod name="Matrix Moonraker">
+		<name>Matrix Moonraker</name>
+		<version>1</version>
+		<url>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</url>
+		<preview>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</preview>
+		<description>
+		</description>
+	</mod>
+</mods>

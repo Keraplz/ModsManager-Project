@@ -21,5 +21,31 @@
 			<description>
 			</description>
 		</mod>
+		<mod name="#Test_UIModsOnline">
+			<name>Matrix Moonraker</name>
+			<version>2</version>
+			<url>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</url>
+			<preview>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</preview>
+			<description>and i like it
+			</description>
+		</mod>
+		<mod name="Testing mods list">
+			<name>Matrix Moonraker1</name>
+			<version>3</version>
+			<url>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</url>
+			<preview>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</preview>
+			<description> but this is awesome,
+				too much awesome,
+				yaaiks
+			</description>
+		</mod>
+		<mod name="mod04">
+			<name>Matrix Moonraker2</name>
+			<version>1</version>
+			<url>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</url>
+			<preview>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</preview>
+			<description> My Description is cool
+			</description>
+		</mod>
 	</mods>
 </parents>

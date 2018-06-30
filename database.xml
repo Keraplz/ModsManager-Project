@@ -48,4 +48,14 @@
 			</description>
 		</mod>
 	</mods>
+	<mods game="Game02">
+		<mod name="Matrix Moonraker02">
+			<name>Matrix Moonraker02</name>
+			<version>2</version>
+			<url>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</url>
+			<preview>https://cdn.discordapp.com/attachments/422425600511442954/458358750613340160/animation_variant00.png</preview>
+			<description>2
+			</description>
+		</mod>
+	</mods>
 </parents>

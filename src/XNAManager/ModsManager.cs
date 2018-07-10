@@ -11,189 +11,316 @@ namespace ModsManager
 {
     class ModsManager
     {
-        public static void UninstallMods()
+        //public static async void UninstallMods()
+        //{
+        //    try
+        //    {
+        //        foreach (Mod modInfo in Profiles.Default.GetMods())
+        //            await Uninstall(modInfo);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e);
+        //    }
+        //}
+        //public static async void InstallMods()
+        //{
+        //    try
+        //    {
+        //        foreach (Mod modInfo in Profiles.Default.GetMods())
+        //            await Install(modInfo);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e);
+        //    }
+        //}
+        //public static async void UninstallMods(IList<Mod> modList)
+        //{
+        //    try
+        //    {
+        //        foreach (Mod modInfo in modList)
+        //            await Uninstall(modInfo);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e);
+        //    }
+        //}
+        //public static async void InstallMods(IList<Mod> modList)
+        //{
+        //    try
+        //    {
+        //        foreach (Mod modInfo in modList)
+        //            await Install(modInfo);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e);
+        //    }
+        //}
+        //public static void uninstallMod(Mod modInfo)
+        //{
+        //    try
+        //    {
+        //        if (!modInfo.isInstalled()) { return; }
+        //
+        //        string bPath = Profiles.Default.GetProgramName() + "/_backup/" + Profiles.Default.GetGame().GetFolderContent() + " - ";
+        //        string cPath = Profiles.Default.GetGame().GetFolderContent() + "/";
+        //        string sPath = bPath + modInfo.GetName() + "/";
+        //
+        //        if (Directory.Exists(sPath) && Directory.Exists(cPath))
+        //        {/*
+        //            using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
+        //                sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");*/
+        //            LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+        //            var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+        //
+        //            foreach (string extension in Profiles.Default.GetGame().GetExtensions().ToArray())
+        //            {
+        //                foreach (string uninstallFile in Directory.GetFiles(sPath, "*" + extension, SearchOption.AllDirectories))
+        //                {
+        //                    cPath = cPath + uninstallFile.Remove(0, bPath.Length + modInfo.GetName().Length + 1);
+        //
+        //                    string pTest_01 = Path.GetFileName(Path.GetDirectoryName(uninstallFile));
+        //                    string pTest_02 = Path.GetFileName(uninstallFile);
+        //                    string pTest_03 = Path.GetFileName(Path.GetDirectoryName(cPath));
+        //                    string pTest_04 = Path.GetFileName(cPath);
+        //                    string pTest_05 = pTest_01 + "/" + pTest_02;
+        //                    string pTest_06 = pTest_03 + "/" + pTest_04;
+        //
+        //                    if (pTest_05 == pTest_06)
+        //                    {
+        //                        File.Copy(uninstallFile, cPath, true);
+        //                        File.Delete(uninstallFile);
+        //                    }
+        //
+        //                    cPath = Profiles.Default.GetGame().GetFolderContent() + "/";
+        //                }
+        //            }
+        //
+        //            Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, false);
+        //
+        //            timeRecord.Stop();
+        //            TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+        //            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
+        //            using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
+        //                sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
+        //        }
+        //
+        //        string toDupe = Path.GetDirectoryName(Path.GetDirectoryName(sPath));
+        //        dupeDirectories(toDupe);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMod(Mod " + modInfo.GetName() + ")");
+        //        //LogFile.WriteLine(e.Message);
+        //    }
+        //}
+        //public static void installMod(Mod modInfo)
+        //{
+        //    IList<String> modFiles = new List<String>();
+        //    IList<String> Pass_modFiles = new List<String>();
+        //
+        //    try
+        //    {
+        //        if (modInfo.isInstalled()) { return; }
+        //
+        //        if (!Directory.Exists(Profiles.Default.GetGame().GetFolderMods()))
+        //            Maintenance.CreatePaths(Profiles.Default.GetMaintenancePaths(), true);
+        //
+        //        foreach (string d in Directory.GetDirectories(Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\"))
+        //        {
+        //            foreach (string a in Profiles.Default.GetGame().GetExtensions().ToArray())
+        //            {
+        //                foreach (string f in Directory.GetFiles(d, "*" + a, SearchOption.AllDirectories))
+        //                {
+        //                    modFiles.Add(f);
+        //                    Pass_modFiles.Add(f.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length));
+        //                    //Definitions.reformed_modFiles_backup.Add(f.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length));
+        //                }
+        //            }
+        //        }
+        //
+        //        if (!IsRepeated(Pass_modFiles))
+        //        {/*
+        //            using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
+        //                sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");*/    
+        //            LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+        //            var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+        //
+        //            // start original game files backup
+        //            FileBackup(modInfo.GetName(), Pass_modFiles);
+        //
+        //            // now call method to override game files with mod files
+        //            foreach (string modPath in modFiles)
+        //            {
+        //                foreach (string modFile in Pass_modFiles)
+        //                {
+        //                    if (Path.GetDirectoryName(modFile).ToLower().StartsWith(Profiles.Default.GetGame().GetFolderContent().ToLower()))
+        //                    {
+        //                        if (modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == modFile || modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile)
+        //                        {
+        //                            File.Copy(modPath, modFile, true);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        if (modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == modFile || modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile)
+        //                        {
+        //                            File.Copy(modPath, Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile, true);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //
+        //            Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, true);
+        //
+        //            timeRecord.Stop();
+        //            TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+        //            LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
+        //            using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
+        //                sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogFile.WriteError(e); // ModsManager.ModsManager.installMod(Mod " + modInfo.GetName() + ")");
+        //        //LogFile.WriteLine(e.Message);
+        //    }
+        //}
+
+        public static async Task<Boolean> UninstallAsync(Mod modInfo)
         {
+            string originalPath = string.Empty;
+            string srcPath = string.Empty;
+            bool IsSuccess = false;
+            int n = 0;
+
             try
             {
-                foreach (Mod modInfo in Profiles.Default.GetMods())
-                    Uninstall(modInfo);
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMods(" + "" + ")");
-                //LogFile.WriteLine(e.Message);
-            }
-        }
-        public static void InstallMods()
-        {
-            try
-            {
-                foreach (Mod modInfo in Profiles.Default.GetMods())
-                    Install(modInfo);
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteError(e); // ModsManager.ModsManager.installMods(" + "" + ")");
-                //LogFile.WriteLine(e.Message);
-            }
-        }
-        public static void UninstallMods(IList<Mod> modList)
-        {
-            try
-            {
-                foreach (Mod modInfo in modList)
-                    Uninstall(modInfo);
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMods(IList<Mod> " + "" + ")");
-                //LogFile.WriteLine(e.Message);
-            }
-        }
-        public static void InstallMods(IList<Mod> modList)
-        {
-            try
-            {
-                foreach (Mod modInfo in modList)
-                    Install(modInfo);
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteError(e); // ModsManager.ModsManager.installMods(IList<Mod> " + "" + ")");
-                //LogFile.WriteLine(e.Message);
-            }
-        }
-        public static void uninstallMod(Mod modInfo)
-        {
-            try
-            {
-                if (!modInfo.isInstalled()) { return; }
+                if (!modInfo.isInstalled()) { return false; }
 
-                string bPath = Profiles.Default.GetProgramName() + "/_backup/" + Profiles.Default.GetGame().GetFolderContent() + " - ";
-                string cPath = Profiles.Default.GetGame().GetFolderContent() + "/";
-                string sPath = bPath + modInfo.GetName() + "/";
+                LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
+                var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
-                if (Directory.Exists(sPath) && Directory.Exists(cPath))
-                {/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");*/
-                    LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
-                    var timeRecord = System.Diagnostics.Stopwatch.StartNew();
-
-                    foreach (string extension in Profiles.Default.GetGame().GetExtensions().ToArray())
-                    {
-                        foreach (string uninstallFile in Directory.GetFiles(sPath, "*" + extension, SearchOption.AllDirectories))
-                        {
-                            cPath = cPath + uninstallFile.Remove(0, bPath.Length + modInfo.GetName().Length + 1);
-
-                            string pTest_01 = Path.GetFileName(Path.GetDirectoryName(uninstallFile));
-                            string pTest_02 = Path.GetFileName(uninstallFile);
-                            string pTest_03 = Path.GetFileName(Path.GetDirectoryName(cPath));
-                            string pTest_04 = Path.GetFileName(cPath);
-                            string pTest_05 = pTest_01 + "/" + pTest_02;
-                            string pTest_06 = pTest_03 + "/" + pTest_04;
-
-                            if (pTest_05 == pTest_06)
-                            {
-                                File.Copy(uninstallFile, cPath, true);
-                                File.Delete(uninstallFile);
-                            }
-
-                            cPath = Profiles.Default.GetGame().GetFolderContent() + "/";
-                        }
-                    }
-
-                    Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, false);
-
-                    timeRecord.Stop();
-                    TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
-                }
-
-                string toDupe = Path.GetDirectoryName(Path.GetDirectoryName(sPath));
-                dupeDirectories(toDupe);
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteError(e); // ModsManager.ModsManager.uninstallMod(Mod " + modInfo.GetName() + ")");
-                //LogFile.WriteLine(e.Message);
-            }
-        }
-        public static void installMod(Mod modInfo)
-        {
-            IList<String> modFiles = new List<String>();
-            IList<String> Pass_modFiles = new List<String>();
-
-            try
-            {
-                if (modInfo.isInstalled()) { return; }
-
-                if (!Directory.Exists(Profiles.Default.GetGame().GetFolderMods()))
-                    Maintenance.CreatePaths(Profiles.Default.GetMaintenancePaths(), true);
-
-                foreach (string d in Directory.GetDirectories(Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\"))
+                // Install Mod Content files one-by-one
+                await Task.Run(() =>
                 {
-                    foreach (string a in Profiles.Default.GetGame().GetExtensions().ToArray())
+                    foreach (string modFile in modInfo.GetContent())
                     {
-                        foreach (string f in Directory.GetFiles(d, "*" + a, SearchOption.AllDirectories))
+                        originalPath = /*GetOriginalPath();*/ modFile.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + "\\".Length + modInfo.GetName().Length + "\\".Length);
+                        srcPath = originalPath.Remove(0, Profiles.Default.GetGame().GetFolderContent().Length + "\\".Length);
+
+                        srcPath = Path.Combine(Profiles.Default.GetProgramName(), "_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName(), srcPath);
+                        try
                         {
-                            modFiles.Add(f);
-                            Pass_modFiles.Add(f.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length));
-                            //Definitions.reformed_modFiles_backup.Add(f.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length));
-                        }
-                    }
-                }
-
-                if (!IsRepeated(Pass_modFiles))
-                {/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");*/    
-                    LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
-                    var timeRecord = System.Diagnostics.Stopwatch.StartNew();
-
-                    // start original game files backup
-                    FileBackup(modInfo.GetName(), Pass_modFiles);
-
-                    // now call method to override game files with mod files
-                    foreach (string modPath in modFiles)
-                    {
-                        foreach (string modFile in Pass_modFiles)
-                        {
-                            if (Path.GetDirectoryName(modFile).ToLower().StartsWith(Profiles.Default.GetGame().GetFolderContent().ToLower()))
-                            {
-                                if (modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == modFile || modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile)
-                                {
-                                    File.Copy(modPath, modFile, true);
-                                }
-                            }
+                            if (!File.Exists(srcPath)) IsSuccess = false;
+                            else if (!File.Exists(originalPath)) IsSuccess = false;
                             else
                             {
-                                if (modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == modFile || modPath.Remove(0, (Profiles.Default.GetGame().GetFolderMods() + "\\" + modInfo.GetName() + "\\").Length) == Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile)
-                                {
-                                    File.Copy(modPath, Profiles.Default.GetGame().GetFolderContent() + "\\" + modFile, true);
-                                }
+                                File.Copy(srcPath, originalPath, true);
+                                n = n + 1;
                             }
                         }
+                        catch
+                        {
+                            IsSuccess = false;
+                        }
                     }
+                });
 
-                    Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, true);
-
+                // Check if method was successful, if not, return false
+                int i = modInfo.GetContent().Count();
+                if (i == n)
+                    IsSuccess = true;
+                else
+                {
                     timeRecord.Stop();
-                    TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
+                    TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+
+                    return false;
                 }
+
+                // Edit Mod .json file isInstalled property
+                await Task.Run(() =>
+                {
+                    Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, false);
+                });
+
+                timeRecord.Stop();
+                TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
+
+                return IsSuccess;
             }
             catch (Exception e)
             {
-                LogFile.WriteError(e); // ModsManager.ModsManager.installMod(Mod " + modInfo.GetName() + ")");
-                //LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e);
+                return false;
             }
         }
+        public static async Task<Boolean> InstallAsync(Mod modInfo)
+        {
+            string originalPath = string.Empty;
+            string srcPath = string.Empty;
+            bool IsSuccess = false;
+            int n = 0;
 
+            try
+            {
+                if (modInfo.isInstalled()) { return false; }
+
+                LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
+                var timeRecord = System.Diagnostics.Stopwatch.StartNew();
+
+                // Backup original files
+                await Task.Run(() => FileBackupAsync(modInfo));
+
+                // Install Mod Content files one-by-one
+                await Task.Run(() =>
+                {
+                    foreach (string modFile in modInfo.GetContent())
+                    {
+                        srcPath = modFile;
+                        originalPath = modFile.Remove(0, Profiles.Default.GetGame().GetFolderMods().Length + "\\".Length + modInfo.GetName().Length + "\\".Length);
+
+                        File.Copy(srcPath, originalPath, true);
+                        n = n + 1;
+                    }
+                });
+
+                // Check if method was successful, if not, return false
+                if (modInfo.GetContent().Count() == n)
+                    IsSuccess = true;
+                else
+                {
+                    timeRecord.Stop();
+                    TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
+
+                    return false;
+                }
+
+                // Edit Mod .json file isInstalled property
+                await Task.Run(() =>
+                {
+                    Keraplz.JSON.Write.ModDefinion.Edit.Installed(modInfo, true);
+                });
+
+                timeRecord.Stop();
+                TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
+
+                return IsSuccess;
+            }
+            catch (Exception e)
+            {
+                LogFile.WriteError(e);
+                return false;
+            }
+        }
         public static Boolean Uninstall(Mod modInfo)
         {
             string originalPath = string.Empty;
@@ -204,9 +331,7 @@ namespace ModsManager
             try
             {
                 if (!modInfo.isInstalled()) { return false; }
-                /*
-                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                    sw.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");*/
+
                 LogFile.Write("Uninstalling mod: " + modInfo.GetName() + " . . .  ");
                 var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -227,7 +352,8 @@ namespace ModsManager
                             n = n + 1;
                         }
                     }
-                    catch {
+                    catch
+                    {
                         IsSuccess = false;
                     }
                 }
@@ -240,9 +366,7 @@ namespace ModsManager
                 {
                     timeRecord.Stop();
                     TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));*/
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
 
                     return false;
                 }
@@ -252,24 +376,13 @@ namespace ModsManager
 
                 timeRecord.Stop();
                 TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
-                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/uninstall.txt"))
-                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
 
                 return IsSuccess;
             }
             catch (Exception e)
             {
-                // Get stack trace for the exception with source file information
-                var trace = new StackTrace(e, true);
-                // Get the top stack frame
-                var frame = trace.GetFrame(0);
-                // Get the line number from the stack frame
-                var line = frame.GetFileLineNumber();
-
-                LogFile.WriteError(e); // ModsManager.ModsManager.UninstallMod(Mod " + modInfo.GetName() + "), line " + line);
-                //LogFile.WriteLine(e.Message);
-
+                LogFile.WriteError(e);
                 return false;
             }
         }
@@ -283,9 +396,7 @@ namespace ModsManager
             try
             {
                 if (modInfo.isInstalled()) { return false; }
-                /*
-                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                    sw.Write("Installing mod: " + modInfo.GetName() + " . . .  ");*/
+
                 LogFile.Write("Installing mod: " + modInfo.GetName() + " . . .  ");
                 var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -309,9 +420,7 @@ namespace ModsManager
                 {
                     timeRecord.Stop();
                     TimeSpan timeFail = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));/*
-                    using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                        sw.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));*/
+                    LogFile.WriteLine("Fail " + timeFail.ToString(@"ss\:fff"));
 
                     return false;
                 }
@@ -321,24 +430,13 @@ namespace ModsManager
 
                 timeRecord.Stop();
                 TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
-                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));/*
-                using (StreamWriter sw = File.AppendText(Profiles.Default.GetProgramName() + "/_logs/install.txt"))
-                    sw.WriteLine("Done " + time.ToString(@"ss\:fff"));*/
+                LogFile.WriteLine("Done " + time.ToString(@"ss\:fff"));
 
                 return IsSuccess;
             }
             catch (Exception e)
             {
-                // Get stack trace for the exception with source file information
-                var trace = new StackTrace(e, true);
-                // Get the top stack frame
-                var frame = trace.GetFrame(0);
-                // Get the line number from the stack frame
-                var line = frame.GetFileLineNumber();
-
-                LogFile.WriteError(e); // ModsManager.ModsManager.InstallMod(Mod " + modInfo.GetName() + "), line " + line);
-                //LogFile.WriteLine(e.Message);
-
+                LogFile.WriteError(e);
                 return false;
             }
         }
@@ -414,7 +512,7 @@ namespace ModsManager
             try
             {
                 string sPath = Profiles.Default.GetGame().GetFolderContent() + "\\";
-                string dPath = Path.Combine(Profiles.Default.GetProgramName(),"_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName());
+                string dPath = Path.Combine(Profiles.Default.GetProgramName(), "_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName());
 
                 foreach (string modFile_ in modInfo.GetContent())
                 {
@@ -433,15 +531,37 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                // Get stack trace for the exception with source file information
-                var trace = new StackTrace(e, true);
-                // Get the top stack frame
-                var frame = trace.GetFrame(0);
-                // Get the line number from the stack frame
-                var line = frame.GetFileLineNumber();
+                LogFile.WriteError(e);
+            }
+        }
+        private static async Task FileBackupAsync(Mod modInfo)
+        {
+            try
+            {
+                string sPath = Profiles.Default.GetGame().GetFolderContent() + "\\";
+                string dPath = Path.Combine(Profiles.Default.GetProgramName(),"_backup", Profiles.Default.GetGame().GetFolderContent() + " - " + modInfo.GetName());
 
-                LogFile.WriteError(e); // ModsManager.FileBackup(Mod " + modInfo.GetName() + "), line " + line);
-                //LogFile.WriteLine(e.Message);
+                await Task.Run(() =>
+                {
+                    foreach (string modFile_ in modInfo.GetContent())
+                    {
+                        string modFile = modFile_.Remove(0, Path.Combine(Profiles.Default.GetGame().GetFolderMods(), modInfo.GetName()).Length + "\\".Length);
+                        sPath = Profiles.Default.GetGame().GetFolderContent() + "\\";
+
+                        if (modFile.ToLower().StartsWith(Profiles.Default.GetGame().GetFolderContent().ToLower()))
+                            sPath = modFile;
+                        else sPath = sPath + modFile;
+
+                        string cDir = dPath + "\\" + Path.GetDirectoryName(sPath).Remove(0, Profiles.Default.GetGame().GetFolderContent().Length + "\\".Length);
+
+                        Directory.CreateDirectory(cDir);
+                        File.Copy(sPath, Path.Combine(cDir, Path.GetFileName(modFile)), true);
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                LogFile.WriteError(e);
             }
         }
         private static void FileBackup(String modName, IList<String> modFiles)
@@ -468,8 +588,7 @@ namespace ModsManager
             }
             catch (Exception e)
             {
-                LogFile.WriteError(e); // ModsManager.Check.fileBackup(String " + modName + ", IList<String> )");
-                //LogFile.WriteLine(e.Message);
+                LogFile.WriteError(e);
             }
         }
         private static void dupeDirectories(string startLocation)

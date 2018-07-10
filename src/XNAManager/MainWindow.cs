@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace ModsManager
 {
@@ -37,7 +38,7 @@ namespace ModsManager
 
         private bool Dev = false;
 
-        public MainWindow(string uptime, bool m_Dev = false)
+        public MainWindow(bool m_Dev = false)
         {
             try
             {
@@ -50,9 +51,7 @@ namespace ModsManager
 
             InitializeComponent();
 
-            string Mode = string.Empty;
-            if (m_Dev) Mode = "[Beta]";
-            LogFile.WriteInfo(CurrentGame, Mode);
+            LogFile.WriteInfo(CurrentGame);
 
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
@@ -66,7 +65,6 @@ namespace ModsManager
             timeRecord.Stop();
             TimeSpan time = TimeSpan.FromMilliseconds(timeRecord.ElapsedMilliseconds);
 
-            uptime = time.ToString(@"ss\:fff");
             BannedMods = Profiles.Default.GetBannedMods();
             Dev = m_Dev;
 
@@ -77,7 +75,7 @@ namespace ModsManager
             updater = new AutoUpdate(this);
 
             GameVer = Check.GetCurrentVersion();
-            StartupTime = uptime;
+            StartupTime = time.ToString(@"ss\:fff");
             NInstalledMods = Keraplz.JSON.Read.Mods.GetNInstalled();
 
             textBox_gameName.Text = Profiles.Default.GetGame().GetName() + " " + Check.GetCurrentVersion();
@@ -217,40 +215,39 @@ namespace ModsManager
 
             //Profiles.Default.Unload(SelectedMod);
         }
-        private void button_installmod_Click(object sender, EventArgs e)
+        private async void button_installmod_Click(object sender, EventArgs e)
         {
             if (button_installmod.Text == "Uninstall")
             {
-                Boolean Success = ModsManager.Uninstall(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
+                Boolean Success = await Task.Run(() => ModsManager.UninstallAsync(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)));
                 if (Success)
                 {
                     if (!Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
                         button_installmod.Text = "Install";
 
-                    Profiles.Default.Refresh();
+                    await Task.Run(() => Profiles.Default.RefreshAsync());
                     BannedMods = Profiles.Default.GetBannedMods();
-
+                    
                     NInstalledMods = NInstalledMods - 1;
-                    Label_UpdateInfo(Profiles.Default.GetGame());
                 }
             }
             else if (button_installmod.Text == "Install")
             {
-                Boolean Success = ModsManager.Install(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text));
+                Boolean Success = await Task.Run(() => ModsManager.InstallAsync(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)));
                 if (Success)
                 {
                     if (Keraplz.JSON.Read.Mods.IsInstalled(label_title.Text))
                         button_installmod.Text = "Uninstall";
 
-                    Profiles.Default.Refresh();
+                    await Task.Run(() => Profiles.Default.RefreshAsync());
                     BannedMods = Profiles.Default.GetBannedMods();
-
+                    
                     NInstalledMods = NInstalledMods + 1;
-                    Label_UpdateInfo(Profiles.Default.GetGame());
                 }
             }
-
-            Label_UpdateStatus(label_title.Text);
+            
+            await Task.Run(() => Label_UpdateInfo(Profiles.Default.GetGame()));
+            await Task.Run(() => Label_UpdateStatus(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text)));
             RefreshListViewColors(Keraplz.JSON.Read.Mods.GetModByName(label_title.Text), false, true);
         }
         private void button_modsfolder_Click(object sender, EventArgs e)
@@ -259,7 +256,7 @@ namespace ModsManager
                 Directory.CreateDirectory(Profiles.Default.GetGame().GetFolderMods());
             Process.Start(Profiles.Default.GetGame().GetFolderMods());
         }
-        private void button_refresh_Click(object sender, EventArgs ea)
+        private async void button_refresh_Click(object sender, EventArgs ea)
         {
             IList<Mod> modList = new List<Mod>();
             int n = 0;
@@ -278,7 +275,7 @@ namespace ModsManager
 
                 Setup.Maintenance_(Profiles.Default.GetProgramName(), Profiles.Default.GetGame(), Profiles.Default.GetMaintenancePaths(), Profiles.Default.GetMaintenanceFiles(), true, false);
 
-                Profiles.Default.Refresh();
+                await Task.Run(() => Profiles.Default.RefreshAsync());
                 BannedMods = Profiles.Default.GetBannedMods();
 
                 //foreach (string modName in Directory.GetFiles(Profiles.Default.GetGame().GetFolderMods(), "*.json")) modList.Add(Keraplz.JSON.Read.Mods.GetModByName(Path.GetFileNameWithoutExtension(modName)));
@@ -506,35 +503,122 @@ namespace ModsManager
             }
         }
 
-        private void Label_UpdateStatus(Mod modInfo)
+        private void SetControlTextSafe(Control c, string Text)
         {
-            if (!modInfo.isLoaded() && !modInfo.isBanned())
+            if (c.InvokeRequired)
             {
-                label_modStatus.Text = "DISABLED";
+                c.Invoke(new Action(() => c.Text = Text));
+                return;
+            }
+            c.Text = Text;
+        }
+        private void SetControlEnabledSafe(Control c, bool Enabled)
+        {
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() => c.Enabled = Enabled));
+                return;
+            }
+            c.Enabled = Enabled;
+        }
+        private void SetControlBackColorSafe(Control c, Color BackColor)
+        {
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() => c.BackColor = BackColor));
+                return;
+            }
+            c.BackColor = BackColor;
+        }
+        private void SetListViewForeColorSafe(ListView c, int Item, int SubItem, Color ForeColor)
+        {
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() => c.Items[Item].SubItems[SubItem].ForeColor = ForeColor));
+                return;
+            }
+            c.Items[Item].SubItems[SubItem].ForeColor = ForeColor;
+        }
+        private void SetListViewBackColorSafe(ListView c, int Item, int SubItem, Color BackColor)
+        {
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() => c.Items[Item].SubItems[SubItem].BackColor = BackColor));
+                return;
+            }
+            c.Items[Item].SubItems[SubItem].BackColor = BackColor;
+        }
+        private string GetListViewTextSafe(ListView c, int Item, int SubItem)
+        {
+            string LVText = string.Empty;
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() => LVText = c.Items[Item].SubItems[SubItem].Text));
+                return LVText;
+            }
+            LVText = c.Items[Item].SubItems[SubItem].Text;
+            return LVText;
+        }
+        private bool IsControlTextSafe(Control c, string Text)
+        {
+            bool result = false;
+            if (c.InvokeRequired)
+            {
+                c.Invoke(new Action(() =>
+                    {
+                        if (c.Text == Text)
+                            result = true;
+                    }));
+            }
+            else if (c.Text == Text)
+                result = true;
 
-                if (modInfo.isInstalled()) label_modStatus.Text += " - INSTALLED";
+            return result;
+        }
 
-                button_installmod.Enabled = false;
-                button_installmod.BackColor = Color.LightGray;
-            }
-            else if (modInfo.isBanned())
-            {
-                label_modStatus.Text = "BANNED";
-                button_installmod.Enabled = false;
-                button_installmod.BackColor = Color.LightGray;
-            }
-            else if (modInfo.isInstalled())
-            {
-                label_modStatus.Text = "INSTALLED";
-                button_installmod.Enabled = true;
-                button_installmod.BackColor = Color.Transparent;
-            }
-            else
-            {
-                label_modStatus.Text = "IDLE";
-                button_installmod.Enabled = true;
-                button_installmod.BackColor = Color.Transparent;
-            }
+        private async void Label_UpdateStatus(Mod modInfo)
+        {
+            string modStatus = string.Empty;
+            bool Enabled = false;
+            Color BackColor = Color.Transparent;
+
+            if (modInfo == null)
+                BackColor = BackColor;
+
+            await Task.Run(() => {
+                if (!modInfo.isLoaded() && !modInfo.isBanned())
+                {
+                    modStatus = "DISABLED";
+
+                    if (modInfo.isInstalled()) modStatus += " - INSTALLED";
+
+                    Enabled = false;
+                    BackColor = Color.LightGray;
+                }
+                else if (modInfo.isBanned())
+                {
+                    modStatus = "BANNED";
+                    Enabled = false;
+                    BackColor = Color.LightGray;
+                }
+                else if (modInfo.isInstalled())
+                {
+                    modStatus = "INSTALLED";
+                    Enabled = true;
+                    BackColor = Color.Transparent;
+                }
+                else
+                {
+                    modStatus = "IDLE";
+                    Enabled = true;
+                    BackColor = Color.Transparent;
+                }
+            });
+
+            SetControlTextSafe(label_modStatus, modStatus); //label_modStatus.Text = modStatus;
+            SetControlEnabledSafe(button_installmod, Enabled); //button_installmod.Enabled = Enabled;
+            SetControlBackColorSafe(button_installmod, BackColor); //button_installmod.BackColor = BackColor;
+
             RefreshListViewColors(modInfo, false, true);
         }
         private void Label_UpdateStatus(string modName)
@@ -542,12 +626,15 @@ namespace ModsManager
             Mod modInfo = Keraplz.JSON.Read.Mods.GetModByName(modName);
             Label_UpdateStatus(modInfo);
         }
-        private void Label_UpdateInfo(Game Game)
+        private async void Label_UpdateInfo(Game Game)
         {
-            label_baseinfo.Text = "Game: " + Game.GetName() + " " + GameVer + ", StartupTime: " + StartupTime + ", Installed Mods: " + NInstalledMods.ToString("00");
+            await Task.Run(() =>
+            {
+                SetControlTextSafe(label_baseinfo, "Game: " + Game.GetName() + " " + GameVer + ", StartupTime: " + StartupTime + ", Installed Mods: " + NInstalledMods.ToString("00"));
 
-            label_filesused.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + "/" + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
-            textBox_NFilesModded.Text = Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + " | " + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000");
+                SetControlTextSafe(label_filesused, Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + "/" + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000"));
+                SetControlTextSafe(textBox_NFilesModded, Keraplz.JSON.Read.Mods.GetNFilesInstalled().ToString("0000") + " | " + Keraplz.JSON.Read.Content.GetNFiles().ToString("0000"));
+            });
         }
 
         private void RefreshListViewColors(Mod modInfo, Boolean isBanned = false, Boolean isSelected = true/*, Color Status, Color Name, Color Type*/)
@@ -561,7 +648,7 @@ namespace ModsManager
                 Name = Default;
                 Type = Default;
 
-                if (listView_modslist.Items[n].SubItems[1].Text == modInfo.GetName())
+                if (GetListViewTextSafe(listView_modslist, n, 1) == modInfo.GetName())
                 {
                     if (modInfo.isInstalled() && isBanned)
                         ModsManager.Uninstall(modInfo);
@@ -579,7 +666,7 @@ namespace ModsManager
                 }
                 else
                 {
-                    Mod modInfo_ = Keraplz.JSON.Read.Mods.GetModByName(listView_modslist.Items[n].SubItems[1].Text);
+                    Mod modInfo_ = Keraplz.JSON.Read.Mods.GetModByName(GetListViewTextSafe(listView_modslist, n, 1));
 
                     Name = Default;
                     Type = Default;
@@ -592,13 +679,13 @@ namespace ModsManager
                     else if (modInfo_.isBanned()) Status = Banned;
                     else Status = nonLoaded;
                 }
-                
-                listView_modslist.Items[n].SubItems[0].BackColor = Status;
-                listView_modslist.Items[n].SubItems[0].ForeColor = Status;
 
-                listView_modslist.Items[n].SubItems[1].BackColor = Name;
+                SetListViewBackColorSafe(listView_modslist, n, 0, Status); //listView_modslist.Items[n].SubItems[0].BackColor = Status;
+                SetListViewForeColorSafe(listView_modslist, n, 0, Status); //listView_modslist.Items[n].SubItems[0].ForeColor = Status;
 
-                listView_modslist.Items[n].SubItems[2].BackColor = Type;
+                SetListViewBackColorSafe(listView_modslist, n, 1, Name); //listView_modslist.Items[n].SubItems[1].BackColor = Name;
+
+                SetListViewBackColorSafe(listView_modslist, n, 2, Type); //listView_modslist.Items[n].SubItems[2].BackColor = Type;
 
                 n = n + 1;
             }
@@ -673,31 +760,30 @@ namespace ModsManager
         }
 
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            IList<Bitmap> images = new List<Bitmap>();
-
-            //images.Add(global::ModsManager.Properties.Resources.preview_xl);
-            //images.Add(global::ModsManager.Properties.Resources.PreviewBorder);
-
-            if (images.Count != 0)
-                foreach (Bitmap myBitmap in images)
-                {
-                    // Create a Bitmap object from an image file.
-                    //Bitmap myBitmap = new Bitmap(Image.FromFile(image));
-
-                    // Get the color of a background pixel.
-                    //Color backColor = myBitmap.GetPixel(1, 1);
-
-                    // Make backColor transparent for myBitmap.
-                    myBitmap.MakeTransparent(Color.FromArgb(0));
-
-                    // Draw myBitmap to the screen.
-                    /*e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, myBitmap.Width, myBitmap.Height);*/
-                    //e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, image_infobg.Width, image_infobg.Height);
-                }
-        }
-
+        //protected override void OnPaint(PaintEventArgs e)
+        //{
+        //    IList<Bitmap> images = new List<Bitmap>();
+        //
+        //    //images.Add(global::ModsManager.Properties.Resources.preview_xl);
+        //    //images.Add(global::ModsManager.Properties.Resources.PreviewBorder);
+        //
+        //    if (images.Count != 0)
+        //        foreach (Bitmap myBitmap in images)
+        //        {
+        //            // Create a Bitmap object from an image file.
+        //            //Bitmap myBitmap = new Bitmap(Image.FromFile(image));
+        //
+        //            // Get the color of a background pixel.
+        //            //Color backColor = myBitmap.GetPixel(1, 1);
+        //
+        //            // Make backColor transparent for myBitmap.
+        //            myBitmap.MakeTransparent(Color.FromArgb(0));
+        //
+        //            // Draw myBitmap to the screen.
+        //            /*e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, myBitmap.Width, myBitmap.Height);*/
+        //            //e.Graphics.DrawImage(myBitmap, image_infobg.Location.X, image_infobg.Location.Y, image_infobg.Width, image_infobg.Height);
+        //        }
+        //}
 
         public String ApplicationName
         {

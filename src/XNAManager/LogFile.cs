@@ -14,6 +14,7 @@ namespace ModsManager
         private static TextWriter logWriter;
         private static bool useTimeStamp = true;
         private static bool IsLineEmpty = true;
+        public static bool IsOpen = false;
 
         //Methods
         public static void Initialize(bool createNewFile = true, bool useTimeStampBool = true)
@@ -28,6 +29,8 @@ namespace ModsManager
                     logWriter = File.AppendText(LogPath);
                     logWriter.WriteLine(Environment.NewLine + "======== New Session ========" + Environment.NewLine);
                 }
+
+                IsOpen = true;
             }
             catch { }
         }
@@ -118,8 +121,13 @@ namespace ModsManager
             else GInfo = GameInfo.GetName();
 
             WriteLine("    " + Mode + "Program Info:");
-            WriteLine("        " + _Assembly.GetName().Name);
-            WriteLine("        Version: " + _Assembly.GetName().Version.ToString());
+#if DEBUG
+            WriteLine("        [DEBUG]" + _Assembly.GetName().Name + " " + _Assembly.GetName().Version.ToString() + " " + OSInfo.GetProcessArchitecture());
+#elif !DEBUG
+            WriteLine("        [RELEASE]" + _Assembly.GetName().Name + " " + _Assembly.GetName().Version.ToString() + " " + OSInfo.GetProcessArchitecture());
+#endif
+
+            //WriteLine("        Version: " + _Assembly.GetName().Version.ToString());
             WriteLine("        Game: " + GInfo);
             WriteLine("        OS: " + OSInfo.GetOSInfo());
             //WriteLine("        Resources Library: ");
@@ -140,6 +148,16 @@ namespace ModsManager
         {
             if (logWriter == null) return;
             logWriter.Close();
+
+            IsOpen = false;
+        }
+        public static void Open()
+        {
+            if (File.Exists(LogPath))
+                logWriter = File.AppendText(LogPath);
+            else logWriter = File.CreateText(LogPath);
+
+            IsOpen = true;
         }
 
     }

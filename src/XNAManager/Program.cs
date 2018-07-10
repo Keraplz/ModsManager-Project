@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ModsManager
@@ -15,13 +16,52 @@ namespace ModsManager
         [STAThread]
         static void Main(string[] args)
         {
+            LogFile.Initialize(false);
+
+            if (false)
+            {
+                // sample code to download mods
+                Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), Games.SpeedRunners);
+                ModsXml modXML = ModsXml.Parse(new Uri(Profiles.Default.GetXmlUrl()), Games.SpeedRunners.GetName(), "Matrix Moonraker");
+                ModOnline MMoonraker = new ModOnline("Matrix Moonraker", modXML.Preview);
+                MMoonraker.Download();
+            }
+            else if (false)
+            {
+                // sample code to extract .zip file
+                using (Stream s = File.Open("testing.zip", FileMode.OpenOrCreate))
+                    CompressedFileHandle.ExtractZip(s, "cache\\testing");
+            }
+            else if (false)
+            {
+                // sample code to grab mod information from database.xml online
+                Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), Games.SpeedRunners);
+                IList<ModsXml> XmlList = ModsXml.Parse(new Uri(Profiles.Default.GetXmlUrl()), Games.SpeedRunners.GetName());
+
+                int n = 0;
+                foreach (ModsXml modXml in XmlList)
+                {
+                    LogFile.WriteLine();
+                    LogFile.WriteLine("XmlList[" + n + "] -> modXml.Name = " + modXml.Name);
+                    LogFile.WriteLine("XmlList[" + n + "] -> modXml.Version = " + modXml.Version);
+                    LogFile.WriteLine("XmlList[" + n + "] -> modXml.Uri = " + modXml.Uri);
+                    LogFile.WriteLine("XmlList[" + n + "] -> modXml.Preview = " + modXml.Preview);
+                    LogFile.WriteLine("XmlList[" + n + "] -> modXml.Description = " + modXml.Description);
+                    n++;
+                }
+
+                LogFile.WriteLine();
+            }
+
+            //Environment.Exit(Environment.ExitCode);
+
             bool DevPass = false;
             /*
             var timeRecord = System.Diagnostics.Stopwatch.StartNew();
 
             // ----
-            */
-            LogFile.Initialize(false);/*
+            
+            LogFile.Initialize(false);
             Profiles.Default = new Profile(Profiles.Blank.GetProgramName(), Games.SpeedRunners);
             //Profiles.CurrentProfile = Profiles.Default;
 
@@ -89,26 +129,19 @@ namespace ModsManager
                 }
             }
 
-            Extract("ModsManager", "Resources", "Logo_100x50.png");//, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ExtractTest"));
+            //Convert.PNG_XNB("Logo_100x50.png", "Logo_100x50.xnb", false);
+            //Extract("ModsManager", "Resources", "Logo_100x50.png");//, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ExtractTest"));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new MainWindow(0.ToString()/*time.ToString(@"ss\:fff")*/, DevPass));
-            Application.Run(new BetaMMUI());
+            //Application.Run(new MMUILoadAction("OPEN", Profiles.Default.GetGame().GetFolderMods()));
+            Application.Run(new MainWindow(DevPass));
+            //Application.Run(new BetaMMUI());
+            //Application.Run(new MMUIConverter());
+
+            
         }
 
-        private static void Extract(string NameSpace, string InternalPath, string ResourceName, string outDir = "")
-        {
-            Assembly _Assembly = Assembly.GetCallingAssembly();
-
-            if (!Directory.Exists(outDir) && outDir != "")
-                Directory.CreateDirectory(outDir);
-
-            using (Stream s = _Assembly.GetManifestResourceStream(NameSpace + "." + (InternalPath == "" ? "" : InternalPath + ".") + ResourceName))
-            using (BinaryReader br = new BinaryReader(s))
-            using (FileStream fs = new FileStream(Path.Combine(outDir, ResourceName), FileMode.OpenOrCreate))
-            using (BinaryWriter bw = new BinaryWriter(fs))
-                bw.Write(br.ReadBytes((int)s.Length));
-        }
+        
     }
 }

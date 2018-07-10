@@ -27,6 +27,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <NuGetPackageImportStamp>9ed13927</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,6 +62,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,8 +80,48 @@
     <Compile Include="BetaMMUI.Designer.cs">
       <DependentUpon>BetaMMUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="CompressedFileHandle.cs" />
+    <Compile Include="ControlTweak.cs" />
+    <Compile Include="Convert.cs" />
     <Compile Include="Files.cs" />
-    <Compile Include="LogFile.cs" />
+    <Compile Include="IModsDownload.cs" />
+    <Compile Include="LogFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MMUIChildModsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMUIChildModsList.Designer.cs">
+      <DependentUpon>MMUIChildModsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MMUIControls.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MMUISplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMUISplashScreen.Designer.cs">
+      <DependentUpon>MMUISplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MMUICustom.cs" />
+    <Compile Include="MMUIModsOnline.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMUIModsOnline.Designer.cs">
+      <DependentUpon>MMUIModsOnline.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MMUIConverter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMUIConverter.Designer.cs">
+      <DependentUpon>MMUIConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MMUIAdvOption.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MMUIAdvOption.Designer.cs">
+      <DependentUpon>MMUIAdvOption.cs</DependentUpon>
+    </Compile>
     <Compile Include="MMUIBugReport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,8 +131,13 @@
     <Compile Include="MMUIMods.cs" />
     <Compile Include="MMUIProgramInfo.cs" />
     <Compile Include="MMUIResources.cs" />
+    <Compile Include="ModsOnline.cs" />
     <Compile Include="Mods.cs" />
-    <Compile Include="ModsManager.cs" />
+    <Compile Include="ModsDownload.cs" />
+    <Compile Include="ModsManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ModsXml.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="JSON\Base.cs" />
     <Compile Include="Game.cs" />
@@ -112,12 +160,28 @@
     </Compile>
     <Compile Include="JSON\Write.cs" />
     <Compile Include="OSystem.cs" />
+    <Compile Include="ResourceTweaker.cs" />
     <EmbeddedResource Include="BetaMMUI.resx">
       <DependentUpon>BetaMMUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMUIChildModsList.resx">
+      <DependentUpon>MMUIChildModsList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMUISplashScreen.resx">
+      <DependentUpon>MMUISplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMUIModsOnline.resx">
+      <DependentUpon>MMUIModsOnline.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMUIConverter.resx">
+      <DependentUpon>MMUIConverter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MMUIAdvOption.resx">
+      <DependentUpon>MMUIAdvOption.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MMUIBugReport.resx">
       <DependentUpon>MMUIBugReport.cs</DependentUpon>
@@ -171,69 +235,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Close_100px.png" />
-    <None Include="Resources\White_Wrench_100px.png" />
-    <None Include="Resources\White_User_Menu_Male_100px.png" />
-    <None Include="Resources\White_Uninstalling_100px.png" />
-    <None Include="Resources\White_Unchecked_Checkbox_100px.png" />
-    <None Include="Resources\White_Trash_100px.png" />
-    <None Include="Resources\White_Toggle_On_100px.png" />
-    <None Include="Resources\White_Toggle_Off_100px.png" />
-    <None Include="Resources\White_Star_Filled_100px.png" />
-    <None Include="Resources\White_Star_100px.png" />
-    <None Include="Resources\White_Speed_100px.png" />
-    <None Include="Resources\White_Source_Code_100px.png" />
-    <None Include="Resources\White_Software_Installer_100px.png" />
-    <None Include="Resources\White_Settings_Hover_100px.png" />
-    <None Include="Resources\White_Settings_100px.png" />
-    <None Include="Resources\White_Send_Email_100px.png" />
-    <None Include="Resources\White_Search_100px.png" />
-    <None Include="Resources\White_Sad_100px.png" />
-    <None Include="Resources\White_Reset_96px.png" />
-    <None Include="Resources\White_Rename_100px.png" />
-    <None Include="Resources\White_Refresh_100px.png" />
-    <None Include="Resources\White_Plus_100px.png" />
-    <None Include="Resources\White_Play_100px.png" />
-    <None Include="Resources\White_Paint_Brush_100px.png" />
-    <None Include="Resources\White_More_100px.png" />
-    <None Include="Resources\White_Minimize_Window_96px.png" />
-    <None Include="Resources\White_Menu_100px.png" />
-    <None Include="Resources\White_Mana_100px.png" />
-    <None Include="Resources\White_Love_100px.png" />
-    <None Include="Resources\White_LOG_100px.png" />
-    <None Include="Resources\White_Linking_100px.png" />
-    <None Include="Resources\White_JSON_100px.png" />
-    <None Include="Resources\White_Installing_100px.png" />
-    <None Include="Resources\White_Information_100px.png" />
-    <None Include="Resources\White_Info_100px.png" />
-    <None Include="Resources\White_Heart_Outline_100px.png" />
-    <None Include="Resources\White_Heart_100px.png" />
-    <None Include="Resources\White_Handshake_Heart_100px.png" />
-    <None Include="Resources\White_FullScreen_Hover_100px.png" />
-    <None Include="Resources\White_FullScreen_100px.png" />
-    <None Include="Resources\White_Forward_100px.png" />
-    <None Include="Resources\White_Fit_to_Width_100px.png" />
-    <None Include="Resources\White_Extensions_Folder_100px.png" />
-    <None Include="Resources\White_Expand_Arrow_100px.png" />
-    <None Include="Resources\White_Error_100px.png" />
-    <None Include="Resources\White_Erase_100px.png" />
-    <None Include="Resources\White_Dragon_100px.png" />
-    <None Include="Resources\White_Download_100px.png" />
-    <None Include="Resources\White_Discord_100px.png" />
-    <None Include="Resources\White_Disconnected_100px.png" />
-    <None Include="Resources\White_Delete_100px.png" />
-    <None Include="Resources\White_Crop_100px.png" />
-    <None Include="Resources\White_Collapse_Arrow_100px.png" />
-    <None Include="Resources\White_Collapse_100px.png" />
-    <None Include="Resources\White_Clear_Symbol_100px.png" />
-    <None Include="Resources\White_Checked_Checkbox_100px.png" />
-    <None Include="Resources\White_Bug_100px.png" />
-    <None Include="Resources\White_Back_100px.png" />
-    <None Include="Resources\White_Automation_100px.png" />
-    <None Include="Resources\White_Approval_100px.png" />
-    <None Include="Resources\White_Advance_100px.png" />
-    <EmbeddedResource Include="Resources\White_Reset_96px_1.png" />
-    <EmbeddedResource Include="Resources\Logo_100x50.png" />
     <None Include="ModsManager\Resources\Info_icon.png" />
     <EmbeddedResource Include="ModsManager\Resources\preview_xl.png" />
     <None Include="FodyWeavers.xml" />

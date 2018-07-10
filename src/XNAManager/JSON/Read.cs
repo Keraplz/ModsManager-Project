@@ -211,7 +211,7 @@ namespace Keraplz.JSON
                             Mods.Add(GetModByName(modName, modsFolder));
                 }
 
-                return Mods.Distinct().ToList();;
+                return Mods.Distinct().ToList();
             }
             public static IList<String> GetContains(String input_filepath, String modsFolder)
             {
@@ -261,14 +261,18 @@ namespace Keraplz.JSON
             {
                 IList<Mod> Mods = new List<Mod>();
 
-                foreach (string nameer in Directory.GetFiles(modsFolder, "*.json"))
+                try
                 {
-                    string modName = Path.GetFileNameWithoutExtension(nameer);
-                    Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(modsFolder + "/" + modName + ".json"));
+                    foreach (string nameer in Directory.GetFiles(modsFolder, "*.json"))
+                    {
+                        string modName = Path.GetFileNameWithoutExtension(nameer);
+                        Base.Mods mods_info_ = JsonConvert.DeserializeObject<Base.Mods>(File.ReadAllText(modsFolder + "/" + modName + ".json"));
 
-                    if (mods_info_.isInstalled)
-                        Mods.Add(GetModByName(modName, modsFolder));
+                        if (mods_info_.isInstalled)
+                            Mods.Add(GetModByName(modName, modsFolder));
+                    }
                 }
+                catch { }
 
                 return Mods.Distinct().ToList();
             }
@@ -351,7 +355,7 @@ namespace Keraplz.JSON
                     }*/);
 
                     return mods_info_.preventLoad;
-                } catch (JsonSerializationException e) { return false; }
+                } catch (JsonSerializationException) { return false; }
             }
             public static Boolean PreventLoad(String input_modname)
             {
@@ -364,7 +368,7 @@ namespace Keraplz.JSON
 
                     return mods_info_.preventLoad;
                 }
-                catch (JsonSerializationException e) { return false; }
+                catch (JsonSerializationException) { return false; }
             }
             public static Boolean IsInstalled(String input_modname, String modsFolder)
             {

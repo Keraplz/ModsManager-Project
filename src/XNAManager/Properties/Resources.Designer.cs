@@ -61,22 +61,52 @@ namespace ModsManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Close_100px {
-            get {
-                object obj = ResourceManager.GetObject("Close_100px", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Coolvetica {
             get {
                 object obj = ResourceManager.GetObject("Coolvetica", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_Close_100px {
+            get {
+                object obj = ResourceManager.GetObject("Gray_Close_100px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_Fit_to_Width_100px {
+            get {
+                object obj = ResourceManager.GetObject("Gray_Fit_to_Width_100px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_Toggle_Off_100px {
+            get {
+                object obj = ResourceManager.GetObject("Gray_Toggle_Off_100px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Gray_Toggle_On_100px {
+            get {
+                object obj = ResourceManager.GetObject("Gray_Toggle_On_100px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -173,6 +203,16 @@ namespace ModsManager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap White_Close_100px1 {
+            get {
+                object obj = ResourceManager.GetObject("White_Close_100px1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap White_Collapse_100px {
             get {
                 object obj = ResourceManager.GetObject("White_Collapse_100px", resourceCulture);
@@ -226,6 +266,16 @@ namespace ModsManager.Properties {
         internal static System.Drawing.Bitmap White_Download_100px {
             get {
                 object obj = ResourceManager.GetObject("White_Download_100px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap White_DragFile_300x200px {
+            get {
+                object obj = ResourceManager.GetObject("White_DragFile_300x200px", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -506,16 +556,6 @@ namespace ModsManager.Properties {
         internal static System.Drawing.Bitmap White_Reset_96px {
             get {
                 object obj = ResourceManager.GetObject("White_Reset_96px", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap White_Reset_96px1 {
-            get {
-                object obj = ResourceManager.GetObject("White_Reset_96px1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MMUIBugReport));
             this.panel_Top = new System.Windows.Forms.Panel();
-            this.label_BugReportTitle = new System.Windows.Forms.Label();
+            this.label_Title = new System.Windows.Forms.Label();
             this.Logo = new System.Windows.Forms.PictureBox();
             this.button_Close = new System.Windows.Forms.Button();
             this.panel_Left = new System.Windows.Forms.Panel();
@@ -42,7 +42,7 @@
             this.label_Seperator = new System.Windows.Forms.Label();
             this.label_Oops = new System.Windows.Forms.Label();
             this.label_ErrorType = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label_Info = new System.Windows.Forms.Label();
             this.textBox_UserDesc = new System.Windows.Forms.TextBox();
             this.button_ToggleAdditionalData = new System.Windows.Forms.Button();
             this.button_ToggleAnonymous = new System.Windows.Forms.Button();
@@ -62,7 +62,7 @@
             // panel_Top
             // 
             this.panel_Top.BackColor = System.Drawing.Color.Black;
-            this.panel_Top.Controls.Add(this.label_BugReportTitle);
+            this.panel_Top.Controls.Add(this.label_Title);
             this.panel_Top.Controls.Add(this.Logo);
             this.panel_Top.Controls.Add(this.button_Close);
             this.panel_Top.Dock = System.Windows.Forms.DockStyle.Top;
@@ -74,20 +74,23 @@
             this.panel_Top.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_Top_MouseMove);
             this.panel_Top.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel_Top_MouseUp);
             // 
-            // label_BugReportTitle
+            // label_Title
             // 
-            this.label_BugReportTitle.AutoSize = true;
-            this.label_BugReportTitle.BackColor = System.Drawing.Color.Transparent;
-            this.label_BugReportTitle.Enabled = false;
-            this.label_BugReportTitle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label_BugReportTitle.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_BugReportTitle.ForeColor = System.Drawing.Color.White;
-            this.label_BugReportTitle.Location = new System.Drawing.Point(106, 9);
-            this.label_BugReportTitle.Name = "label_BugReportTitle";
-            this.label_BugReportTitle.Size = new System.Drawing.Size(125, 30);
-            this.label_BugReportTitle.TabIndex = 6;
-            this.label_BugReportTitle.Text = "Bug Report";
-            this.label_BugReportTitle.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.label_Title.AutoSize = true;
+            this.label_Title.BackColor = System.Drawing.Color.Transparent;
+            this.label_Title.Enabled = false;
+            this.label_Title.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label_Title.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_Title.ForeColor = System.Drawing.Color.White;
+            this.label_Title.Location = new System.Drawing.Point(106, 9);
+            this.label_Title.Name = "label_Title";
+            this.label_Title.Size = new System.Drawing.Size(125, 30);
+            this.label_Title.TabIndex = 6;
+            this.label_Title.Text = "Bug Report";
+            this.label_Title.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.label_Title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label_Title_MouseDown);
+            this.label_Title.MouseMove += new System.Windows.Forms.MouseEventHandler(this.label_Title_MouseMove);
+            this.label_Title.MouseUp += new System.Windows.Forms.MouseEventHandler(this.label_Title_MouseUp);
             // 
             // Logo
             // 
@@ -105,7 +108,7 @@
             // 
             this.button_Close.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Close.BackColor = System.Drawing.Color.Transparent;
-            this.button_Close.BackgroundImage = global::ModsManager.Properties.Resources.Close_100px;
+            this.button_Close.BackgroundImage = global::ModsManager.Properties.Resources.Gray_Close_100px;
             this.button_Close.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.button_Close.Enabled = false;
             this.button_Close.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -249,19 +252,19 @@
             this.label_ErrorType.Text = "An unexpected error occurred.";
             this.label_ErrorType.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
-            // label1
+            // label_Info
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(56, 128);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(384, 136);
-            this.label1.TabIndex = 9;
-            this.label1.Text = resources.GetString("label1.Text");
-            this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.label_Info.AutoSize = true;
+            this.label_Info.BackColor = System.Drawing.Color.Transparent;
+            this.label_Info.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label_Info.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.label_Info.ForeColor = System.Drawing.Color.White;
+            this.label_Info.Location = new System.Drawing.Point(56, 128);
+            this.label_Info.Name = "label_Info";
+            this.label_Info.Size = new System.Drawing.Size(384, 136);
+            this.label_Info.TabIndex = 9;
+            this.label_Info.Text = resources.GetString("label_Info.Text");
+            this.label_Info.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // textBox_UserDesc
             // 
@@ -274,6 +277,7 @@
             this.textBox_UserDesc.Name = "textBox_UserDesc";
             this.textBox_UserDesc.Size = new System.Drawing.Size(400, 120);
             this.textBox_UserDesc.TabIndex = 10;
+            this.textBox_UserDesc.TextChanged += new System.EventHandler(this.textBox_UserDesc_TextChanged);
             // 
             // button_ToggleAdditionalData
             // 
@@ -309,6 +313,7 @@
             this.button_ToggleAnonymous.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button_ToggleAnonymous.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.button_ToggleAnonymous.UseVisualStyleBackColor = false;
+            this.button_ToggleAnonymous.Visible = false;
             this.button_ToggleAnonymous.Click += new System.EventHandler(this.button_ToggleAnonymous_Click);
             // 
             // pictureBox_ToggleAnonymous
@@ -322,6 +327,7 @@
             this.pictureBox_ToggleAnonymous.Size = new System.Drawing.Size(50, 50);
             this.pictureBox_ToggleAnonymous.TabIndex = 11;
             this.pictureBox_ToggleAnonymous.TabStop = false;
+            this.pictureBox_ToggleAnonymous.Visible = false;
             // 
             // pictureBox_ToggleAdditionalData
             // 
@@ -358,7 +364,7 @@
             this.Controls.Add(this.pictureBox_ToggleAdditionalData);
             this.Controls.Add(this.button_ToggleAdditionalData);
             this.Controls.Add(this.textBox_UserDesc);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_Info);
             this.Controls.Add(this.label_ErrorType);
             this.Controls.Add(this.label_Oops);
             this.Controls.Add(this.panel_Bottom);
@@ -391,10 +397,10 @@
         private System.Windows.Forms.PictureBox Logo;
         private System.Windows.Forms.Panel panel_Bottom;
         private System.Windows.Forms.PictureBox pictureBox_Bug;
-        private System.Windows.Forms.Label label_BugReportTitle;
+        private System.Windows.Forms.Label label_Title;
         private System.Windows.Forms.Label label_Oops;
         private System.Windows.Forms.Label label_ErrorType;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_Info;
         private System.Windows.Forms.TextBox textBox_UserDesc;
         private System.Windows.Forms.PictureBox pictureBox_Send;
         private System.Windows.Forms.Button button_Send;

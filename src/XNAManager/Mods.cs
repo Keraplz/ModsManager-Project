@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ModsManager
 {
@@ -52,6 +53,23 @@ namespace ModsManager
         public String GetName() { return m_Name; }
         public Boolean isInstalled() { return m_isInstalled; }
         public IList<String> GetTypes() { return m_Types; }
+        public String GetTypesString() {
+            string Types = string.Empty;
+            int i = 0;
+
+            foreach (string Type in m_Types)
+                foreach (string GameType in Keraplz.JSON.Read.Content.GetTypes(Profiles.Default.GetGame().GetFolderContent()))
+                    if (GameType.ToLower() == Type.ToLower())
+                    {
+                        Types += GameType;
+                        i = i + 1;
+
+                        if (i < m_Types.Count)
+                            Types += ", ";
+                    }
+
+            return Types;
+        }
         public IList<String> GetContent(bool test = false) {
 
             if (test)
@@ -107,6 +125,8 @@ namespace ModsManager
 
         public Boolean Refresh()
         {
+            this.m_isInstalled = Keraplz.JSON.Read.Mods.IsInstalled(m_Name, Profiles.Default.GetGame().GetFolderMods());
+
             bool denied = false;
 
             //int i = 0;
@@ -136,6 +156,46 @@ namespace ModsManager
                 if (m_Types.Count > 0) shouldStop = true;
             }
 
+
+            return denied;
+        }
+        public async Task<Boolean> RefreshAsync()
+        {
+            this.m_isInstalled = Keraplz.JSON.Read.Mods.IsInstalled(m_Name, Profiles.Default.GetGame().GetFolderMods());
+
+            bool denied = false;
+
+            //int i = 0;
+            string oriType = string.Empty;
+            IList<String> newTypes = new List<String>();
+
+            bool shouldStop = false;
+
+            await Task.Run(() =>
+            {
+                while (!denied && !shouldStop)
+                {
+                    string modPath_ = string.Empty;
+                    m_Types.Clear();
+
+                    foreach (string modPath in Directory.GetDirectories(Path.Combine(Profiles.Default.GetGame().GetFolderMods(), m_Name)))
+                        if (modPath.ToLower().Contains(Profiles.Default.GetGame().GetFolderContent().ToLower()))
+                        {
+                            modPath_ = Path.Combine(Profiles.Default.GetGame().GetFolderMods(), m_Name, Profiles.Default.GetGame().GetFolderContent());
+                            break;
+                        }
+                        else modPath_ = Path.Combine(Profiles.Default.GetGame().GetFolderMods(), m_Name);
+
+                    foreach (string modPath in Directory.GetDirectories(modPath_))
+                        foreach (string path in Directory.GetDirectories(Profiles.Default.GetGame().GetFolderContent()))
+                        {
+                            oriType = path.Remove(0, Profiles.Default.GetGame().GetFolderContent().Length + "\\".Length);
+                            if (modPath.ToLower().Contains(oriType.ToLower())) m_Types.Add(oriType);
+                        }
+
+                    if (m_Types.Count > 0) shouldStop = true;
+                }
+            });
 
             return denied;
         }
@@ -182,6 +242,12 @@ namespace ModsManager
         //    else return false;
         //}
 
+        public ModOnline ToModOnline()
+        {
+            ModsXml modXML = ModsXml.Parse(new Uri(Profiles.Default.GetXmlUrl()), Games.SpeedRunners.GetName(), m_Name);
+            return new ModOnline(m_Name, modXML.Preview);
+        }
+
         public class ModFile
         {
             private string m_Path;
@@ -196,7 +262,7 @@ namespace ModsManager
             }
 
             public string GetPath() { return m_Path; }
-            public string GetType() { return m_Type; }
+            public string GetTypeTag() { return m_Type; }
             public string GetExtension() { return m_Extension; }
         }
 

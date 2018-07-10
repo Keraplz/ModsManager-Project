@@ -95,6 +95,11 @@ namespace ModsManager
             if (Is64Bit) return "64-bit";
             else return "32-bit";
         }
+        public string GetProcessArchitecture()
+        {
+            if (IntPtr.Size == 8) return "64-bit";
+            else return "32-bit";
+        }
 
         /// <summary>
         /// The function determines whether the current operating system is a 
@@ -153,6 +158,5 @@ namespace ModsManager
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
-
     }
 }

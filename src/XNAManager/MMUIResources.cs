@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace ModsManager
@@ -12,9 +8,13 @@ namespace ModsManager
         //
         // Colors
         //
-        public static Color Transparent = System.Drawing.Color.Transparent;
+        public static Color Transparent = Color.Transparent;
         public static Color Secondary = Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-        public static Color Tertiary = System.Drawing.Color.Black;
+        public static Color Tertiary = Color.Black;
+        public static Color ClickPrimary = Color.Red; // default: Red
+        public static Color ClickSecondary = Color.Blue; // default: Blue
+        public static Color HoverPrimary = Color.FromArgb(50, 255, 0, 0); // default: Light Translucid Red
+        public static Color HoverSecondary = Color.FromArgb(50, 50, 100, 200); // default: Light Translucid Blue
         //
         // Icons
         //
@@ -25,9 +25,9 @@ namespace ModsManager
         //
         public static Size WindowSize = new Size(1020, 600);
         //
-        // Mod List Index
+        // Banned Mods
         //
-        public static int Index = -1;
+        public static IList<Mod> BannedMods;
 
     }
 }

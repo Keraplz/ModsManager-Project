@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ModsManager
@@ -25,6 +20,8 @@ namespace ModsManager
 
         private bool IsOnAdditData;
         private bool IsOnAnonymous;
+
+        private bool TriggeredExc;
 
         public MMUIBugReport(MMUIProgramInfo _Info, Exception e = null)
         {
@@ -48,6 +45,7 @@ namespace ModsManager
 
             if (e != null)
             {
+                TriggeredExc = true;
                 string ErrorMessage = string.Empty;
 
                 // Get method name
@@ -71,6 +69,18 @@ namespace ModsManager
                 ErrorMessage,
                 e.Message);
             }
+            else TriggeredExc = false;
+
+            if (!TriggeredExc)
+            {
+                label_Oops.Text = "Whoosh...";
+                label_ErrorType.Text = "Take your time.";
+                label_Info.Text = "      If you found a problem with our program take your time to\r\ndescribe and report it.\r\n\r\n      Reporting this error will help us make our product better.\r\n      All information is treated as confidential and is used only to\r\nimprove future versions of this program.\r\n\r\n  Please describe the problem:";
+
+                button_Send.Enabled = false;
+                button_Send.ForeColor = Color.Gray;
+            }
+
         }
 
         private void button_Send_Click(object sender, EventArgs e)
@@ -83,24 +93,51 @@ namespace ModsManager
 
             string Username = string.Empty;
             if (!IsOnAnonymous)
-                Username = " - Katt";
+                Username = " - MyUsername";
 
             _Mail = new MailMessage("mmuireport@gmail.com", "mmuireport@gmail.com", "Bug Report" + Username, Body);
-            if (IsOnAdditData) _Mail.Attachments.Add(new Attachment("Logo_100x50.png"));
+            if (IsOnAdditData && File.Exists("ModsManager\\ModsManager.log"))
+            {
+                LogFile.Close();
+                _Mail.Attachments.Add(new Attachment("ModsManager\\ModsManager.log"));
+            }
 
             _Client.Send(_Mail);
-            Application.Restart();
-            Environment.Exit(Environment.ExitCode);
+
+            if (TriggeredExc)
+            {
+                Application.Restart();
+                Environment.Exit(Environment.ExitCode);
+            }
+            else
+            {
+                if (IsOnAdditData && !LogFile.IsOpen)
+                {
+                    _Mail.Dispose();
+                    _Client.Dispose();
+                    LogFile.Open();
+                }
+                this.Close();
+            }
         }
         private void button_NotSend_Click(object sender, EventArgs e)
         {
-            Application.Restart();
-            Environment.Exit(Environment.ExitCode);
+            if (TriggeredExc)
+            {
+                Application.Restart();
+                Environment.Exit(Environment.ExitCode);
+            }
+            else this.Close();
         }
 
         private void button_Close_Click(object sender, EventArgs e)
         {
-            this.Close();
+            if (TriggeredExc)
+            {
+                Application.Restart();
+                Environment.Exit(Environment.ExitCode);
+            }
+            else this.Close();
         }
 
         private void button_ToggleAdditionalData_Click(object sender, EventArgs e)
@@ -151,6 +188,24 @@ namespace ModsManager
             if (TogMove)
             {
                 this.SetDesktopLocation(MousePosition.X - MValX, MousePosition.Y - MValY);
+            }
+        }
+
+        private void label_Title_MouseDown(object sender, MouseEventArgs e)
+        {
+            TogMove = true;
+            MValX = e.X;
+            MValY = e.Y;
+        }
+        private void label_Title_MouseUp(object sender, MouseEventArgs e)
+        {
+            TogMove = false;
+        }
+        private void label_Title_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (TogMove)
+            {
+                this.SetDesktopLocation(MousePosition.X - MValX - label_Title.Location.X, MousePosition.Y - MValY + (panel_Left.Height / 2) - label_Title.Width - label_Title.Location.Y);
             }
         }
 
@@ -213,6 +268,20 @@ namespace ModsManager
             controls.Add(parent);
 
             return controls;
+        }
+
+        private void textBox_UserDesc_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox_UserDesc.Text.Trim().Length > 0)
+            {
+                button_Send.Enabled = true;
+                button_Send.ForeColor = Color.White;
+            }
+            else
+            {
+                button_Send.Enabled = false;
+                button_Send.ForeColor = Color.Gray;
+            }
         }
     }
 }

@@ -17,6 +17,24 @@ namespace ModsManager
     }
     public class Profile
     {
+        // TODO :: Replace profile class with proper class and interface architecture.
+        // 
+        // List of mods should be defined inside the Game class.
+        // each mod should contain data declaring current state,
+        // Ex.: Banned, Outdated, Idle, Installed, etc...
+        // 
+        // List of Game should be stored ???
+        // 
+        // Maintenance related paths and files should be reviewd
+        // and hardcoded inside startup sequence.
+        // 
+        // Preview Extensions should be defined at class who handles Mod attributes
+        // in order to search and store the preview images uri.
+        // 
+        // m_ProgramName and m_WindowName are not necessary.
+        // 
+        // Xml uri should be hardcoded inside startup sequence.
+        
         private IList<Mod> m_Mods;
         private Game m_Game;
         private IList<Mod> m_BannedMods;

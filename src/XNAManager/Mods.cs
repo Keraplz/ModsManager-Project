@@ -7,6 +7,23 @@ namespace ModsManager
 {
     public class Mod
     {
+        // TODO :: Review class and write interface for Mod
+        // 
+        // Create new class and interface for File
+        // each instance of File should contain:
+        // full uri, pure size, getter for size as string, IO stream for content.
+        // 
+        // m_Content should be IList<File> to hold all
+        // data for each file of this instance of Mod.
+        // 
+        // Define uri per preview image based on image extensions.
+        // 
+        // Replace boolean with data declaring current state,
+        // Ex.: Banned, Outdated, Idle, Installed, etc...
+        // 
+        // Review and remove unnecessary code, Ex.:
+        // Refresh, GetContent, etc...
+        
         // Members
 
         [Newtonsoft.Json.JsonProperty("name")]
